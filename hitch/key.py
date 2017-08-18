@@ -55,7 +55,7 @@ class Engine(BaseEngine):
             self.path.working_dir.rmtree(ignore_errors=True)
         self.path.working_dir.mkdir()
 
-        self.path.key.joinpath("code_that_does_things.py").copy(self.path.state)
+        #self.path.key.joinpath("code_that_does_things.py").copy(self.path.state)
         
         for filename in ["example.story", "example1.story", "example2.story"]:
             if filename in self.preconditions:
@@ -82,8 +82,10 @@ class Engine(BaseEngine):
                 run(self.pip("install", "-r", "debugrequirements.txt").in_dir(self.path.key))
 
         # Uninstall and reinstall
-        self.pip("uninstall", "hitchrunpy", "-y").ignore_errors().run()
-        self.pip("install", ".").in_dir(self.path.project).run()
+        with hitchtest.monitor(pathq(self.path.project.joinpath("hitchrunpy"))) as changed:
+            if changed:
+                self.pip("uninstall", "hitchrunpy", "-y").ignore_errors().run()
+                self.pip("install", ".").in_dir(self.path.project).run()
 
         #self.services = hitchserve.ServiceBundle(
             #str(self.path.project),
@@ -332,9 +334,9 @@ def testfile(filename):
     )
 
 
-def ci():
+def regression():
     """
-    Continuos integration - run all tests and linter.
+    Regression test - run all tests and linter.
     """
     lint()
     print(
@@ -349,15 +351,15 @@ def lint():
     Lint all code.
     """
     python("-m", "flake8")(
-        DIR.project.joinpath("strictyaml"),
+        DIR.project.joinpath("hitchrunpy"),
         "--max-line-length=100",
         "--exclude=__init__.py",
     ).run()
-    python("-m", "flake8")(
-        DIR.key.joinpath("key.py"),
-        "--max-line-length=100",
-        "--exclude=__init__.py",
-    ).run()
+    #python("-m", "flake8")(
+        #DIR.key.joinpath("key.py"),
+        #"--max-line-length=100",
+        #"--exclude=__init__.py",
+    #).run()
     print("Lint success!")
 
 

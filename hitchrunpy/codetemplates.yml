@@ -6,15 +6,9 @@ base: |
   if sys.version_info[0] == 3:
     unicode = str
   
-  {% if variables %}
-  {% for name, value in variables.items() %}
-  {{ name }} = u"""{{ value }}"""
-  {% endfor %}
-  {% endif %}
-  
   {% if setup %}
   try:
-  {{ setup|indent(4) }}
+      {{ setup|indent(4) }}
   except Exception as error:
       with open("{{ error_path }}", "w") as handle:
           handle.write(unicode(error))
