@@ -4,6 +4,7 @@ from commandlib import Command
 from jinja2 import DictLoader
 from strictyaml import load
 from path import Path
+import difflib
 import json
 
 
@@ -112,11 +113,17 @@ class ExamplePythonCode(object):
                         "{1}\n"
                         "\n"
                         "EXPECTED:\n"
-                        "{2}"
+                        "{2}\n"
+                        "DIFF:\n"
+                        "{3}"
                     ).format(
                         self._exception_type,
                         error_details['text'],
                         self._exception_text,
+                        ''.join(difflib.ndiff(
+                            error_details['text'].splitlines(1),
+                            self._exception_text.splitlines(1)
+                        ))
                     ))
             else:
                 raise ExpectedExceptionButNoExceptionOccurred(
