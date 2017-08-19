@@ -26,7 +26,7 @@ class ExpectedExceptionMessageWasDifferent(HitchRunPyException):
     pass
 
 
-class ExpectedExceptionButWasNoException(HitchRunPyException):
+class ExpectedExceptionButNoExceptionOccurred(HitchRunPyException):
     pass
 
 
@@ -119,7 +119,11 @@ class ExamplePythonCode(object):
                         self._exception_text,
                     ))
             else:
-                raise ExpectedExceptionButWasNoException("expected exception but was no exception")
+                raise ExpectedExceptionButNoExceptionOccurred(
+                    "Expected exception '{0}', but no exception occurred.".format(
+                        self._exception_type,
+                    )
+                )
         else:
             if error_path.exists():
                 error_details = json.loads(error_path.bytes().decode('utf8'))

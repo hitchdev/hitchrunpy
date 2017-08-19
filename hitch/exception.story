@@ -54,6 +54,25 @@ Expected exception was different:
     - Raises Exception: |
         Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised.
 
+
+Expected exception but no exception occurred:
+  preconditions:
+    code: |
+      from hitchrunpy import ExamplePythonCode
+      from commandlib import python
+      
+      working_dir = '{{ working_dir }}'
+      
+      ExamplePythonCode("""
+      
+      pass
+      
+      """).expect_exception("__main__.CustomException", "This should happen").run(working_dir, python)
+  scenario:
+    - Raises Exception: |
+        Expected exception '__main__.CustomException', but no exception occurred.
+
+
         
 
 Expected exception has different message:
