@@ -16,7 +16,7 @@ base: |
           }))
   
   
-  {% if code %}
+  {% if code or setup_code %}
   try:
       {{ setup_code|indent(4) }}
 
