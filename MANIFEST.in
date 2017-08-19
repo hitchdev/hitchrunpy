@@ -1,2 +1,2 @@
-recursive-include hitchrunpy *.py *.yml
+recursive-include hitchrunpy *.py *.jinja2
 include VERSION

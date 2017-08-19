@@ -1,0 +1,18 @@
+{% extends 'base.jinja2' %}
+
+{% block main %}
+try:
+    if ({{ lhs }}) != ({{ rhs }}):
+        not_equal({{ lhs }}, {{ rhs }})
+except Exception as error:
+    import json
+
+    with open("{{ error_path }}", "w") as handle:
+        handle.write(json.dumps({
+            "event": "exception",
+            "exception_type": "{}.{}".format(
+                type(error).__module__, type(error).__name__
+            ),
+            "text": unicode(error),
+        }))
+{% endblock %}

@@ -1,14 +1,13 @@
-from jinja2 import DictLoader, environment
+from jinja2 import FileSystemLoader, environment
 from hitchrunpy import exceptions
 from commandlib import Command
-from strictyaml import load
 from path import Path
 from copy import copy
 import difflib
 import json
 
 
-HITCHRUNPY_DIR = Path(__file__).dirname().abspath()
+HITCHRUNPY_TEMPLATE_DIR = Path(__file__).dirname().abspath().joinpath("templates")
 
 
 class ExamplePythonCode(object):
@@ -63,12 +62,10 @@ class ExamplePythonCode(object):
         example_python_code = working_dir.joinpath("examplepythoncode.py")
 
         env = environment.Environment()
-        env.loader = DictLoader(
-            load(HITCHRUNPY_DIR.joinpath("codetemplates.yml").bytes().decode('utf8')).data
-        )
+        env.loader = FileSystemLoader(HITCHRUNPY_TEMPLATE_DIR)
 
         if self._is_equal:
-            example_python_code.write_text(env.get_template("is_equal").render(
+            example_python_code.write_text(env.get_template("is_equal.jinja2").render(
                 setup_code=self._setup_code,
                 code=self._code,
                 lhs=self._lhs,
@@ -76,7 +73,7 @@ class ExamplePythonCode(object):
                 error_path=error_path,
             ))
         else:
-            example_python_code.write_text(env.get_template("base").render(
+            example_python_code.write_text(env.get_template("base.jinja2").render(
                 setup_code=self._setup_code,
                 code=self._code,
                 error_path=error_path,

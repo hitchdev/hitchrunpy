@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+import sys
+
+if sys.version_info[0] == 3:
+    unicode = str
+
+def not_equal(lhs, rhs):
+    import json
+
+    with open("{{ error_path }}", "w") as handle:
+        handle.write(json.dumps({
+            "event": "notequal",
+            "lhs": repr(lhs),
+            "rhs": repr(rhs),
+        }))
+
+
+{% if code or setup_code %}
+try:
+    {{ setup_code|indent(4) }}
+
+    {{ code|indent(4) }}
+except Exception as error:
+    import json
+
+    with open("{{ error_path }}", "w") as handle:
+        handle.write(json.dumps({
+            "event": "exception",
+            "exception_type": "{}.{}".format(
+                type(error).__module__, type(error).__name__
+            ),
+            "text": unicode(error),
+        }))
+{% endif %}
+
+{% block main %}
+
+{% endblock %}
