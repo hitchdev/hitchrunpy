@@ -1,10 +1,20 @@
 base: |
   # -*- coding: utf-8 -*-
-  import sure
   import sys
   
   if sys.version_info[0] == 3:
     unicode = str
+
+  def not_equal(lhs, rhs):
+      import json
+
+      with open("{{ error_path }}", "w") as handle:
+          handle.write(json.dumps({
+              "event": "notequal",
+              "lhs": repr(lhs),
+              "rhs": repr(rhs),
+          }))
+  
   
   {% if setup %}
   try:
@@ -14,6 +24,7 @@ base: |
 
       with open("{{ error_path }}", "w") as handle:
           handle.write(json.dumps({
+              "event": "exception",
               "exception_type": "{}.{}".format(
                   type(error).__module__, type(error).__name__
               ),
@@ -29,12 +40,14 @@ is_equal: |
 
   {% block main %}
   try:
-      ({{ lhs }}).should.be.equal({{ rhs }})
+      if ({{ lhs }}) != ({{ rhs }}):
+         not_equal({{ lhs }}, {{ rhs }})
   except Exception as error:
       import json
 
       with open("{{ error_path }}", "w") as handle:
           handle.write(json.dumps({
+              "event": "exception",
               "exception_type": "{}.{}".format(
                   type(error).__module__, type(error).__name__
               ),

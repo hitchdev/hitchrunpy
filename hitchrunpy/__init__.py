@@ -31,6 +31,10 @@ class ExpectedExceptionButNoExceptionOccurred(HitchRunPyException):
     pass
 
 
+class NotEqual(HitchRunPyException):
+    pass
+
+
 class ExamplePythonCode(object):
     def __init__(self, code):
         self._code = code
@@ -79,11 +83,6 @@ class ExamplePythonCode(object):
                 rhs=self._rhs,
                 error_path=error_path,
             ))
-        elif self._expect_exception:
-            example_python_code.write_text(env.get_template("base").render(
-                setup=self._code,
-                error_path=error_path,
-            ))
         else:
             example_python_code.write_text(env.get_template("base").render(
                 setup=self._code,
@@ -93,52 +92,69 @@ class ExamplePythonCode(object):
         
         pycommand(example_python_code).in_dir(working_dir).run()
         
-        if self._expect_exception:
-            if error_path.exists():
-                error_details = json.loads(error_path.bytes().decode('utf8'))
-                
-                if error_details['exception_type'] != self._exception_type:
-                    raise ExpectedExceptionWasDifferent((
-                        "Expected exception '{0}', instead "
-                        "'{1}' was raised."
-                    ).format(self._exception_type, error_details['exception_type']))
+        if error_path.exists():
+            error_details = json.loads(error_path.bytes().decode('utf8'))
             
-                if error_details['text'] == self._exception_text:
-                    return
-                else:
-                    raise ExpectedExceptionMessageWasDifferent((
-                        "Expected exception '{0}' was raised, but message was different.\n"
-                        "\n"
-                        "ACTUAL:\n"
-                        "{1}\n"
-                        "\n"
-                        "EXPECTED:\n"
-                        "{2}\n"
-                        "DIFF:\n"
-                        "{3}"
-                    ).format(
-                        self._exception_type,
-                        error_details['text'],
-                        self._exception_text,
-                        ''.join(difflib.ndiff(
-                            error_details['text'].splitlines(1),
-                            self._exception_text.splitlines(1)
+            if error_details['event'] == "exception":
+                if self._expect_exception:
+                    
+                    if error_details['exception_type'] != self._exception_type:
+                        raise ExpectedExceptionWasDifferent((
+                            "Expected exception '{0}', instead "
+                            "'{1}' was raised."
+                        ).format(self._exception_type, error_details['exception_type']))
+                
+                    if error_details['text'] == self._exception_text:
+                        return
+                    else:
+                        raise ExpectedExceptionMessageWasDifferent((
+                            "Expected exception '{0}' was raised, but message was different.\n"
+                            "\n"
+                            "ACTUAL:\n"
+                            "{1}\n"
+                            "\n"
+                            "EXPECTED:\n"
+                            "{2}\n"
+                            "DIFF:\n"
+                            "{3}"
+                        ).format(
+                            self._exception_type,
+                            error_details['text'],
+                            self._exception_text,
+                            ''.join(difflib.ndiff(
+                                error_details['text'].splitlines(1),
+                                self._exception_text.splitlines(1)
+                            ))
                         ))
-                    ))
+                else:
+                    raise UnexpectedException(
+                        "Unexpected exception '{0}' raised. Message:\n{1}".format(
+                            error_details['exception_type'],
+                            error_details['text'],
+                        )
+                    )
+            elif error_details['event'] == "notequal":
+                raise NotEqual((
+                  "'{0}' is not equal to '{1}'.\n"
+                  "\n"
+                  "'{0}' is:\n"
+                  "{2}\n"
+                  "\n"
+                  "'{1}' is:\n"
+                  "{3}"
+                ).format(
+                    self._lhs,
+                    self._rhs,
+                    error_details['lhs'],
+                    error_details['rhs'],
+                ))
             else:
+                raise TypeError("Invalid event type {0} reported.".format(event))                
+        else:
+            if self._expect_exception:
                 raise ExpectedExceptionButNoExceptionOccurred(
                     "Expected exception '{0}', but no exception occurred.".format(
                         self._exception_type,
                     )
                 )
-        else:
-            if error_path.exists():
-                error_details = json.loads(error_path.bytes().decode('utf8'))
-                raise UnexpectedException(
-                    "Unexpected exception '{0}' raised. Message:\n{1}".format(
-                        error_details['exception_type'],
-                        error_details['text'],
-                    )
-                )
-        
-        
+
