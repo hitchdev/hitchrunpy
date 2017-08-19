@@ -72,6 +72,15 @@ class ExamplePythonCode(object):
         
 
     def run(self, working_dir, python_bin):
+        """
+        Run the defined code with python_bin in working_dir.
+        
+        python_bin - can either be a python commandlib object or a
+        string referencing a python binary.
+        
+        working_dir can either be a path.py object or a string
+        referencing an existing directory.
+        """
         pycommand = Command(python_bin).in_dir(working_dir)
         working_dir = Path(working_dir)
         
