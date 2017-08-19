@@ -142,11 +142,17 @@ class ExamplePythonCode(object):
                   "\n"
                   "'{1}' is:\n"
                   "{3}"
+                  "DIFF:\n"
+                  "{4}"
                 ).format(
                     self._lhs,
                     self._rhs,
                     error_details['lhs'],
                     error_details['rhs'],
+                    ''.join(difflib.ndiff(
+                        error_details['lhs'].splitlines(1),
+                        error_details['rhs'].splitlines(1)
+                    )),
                 ))
             else:
                 raise TypeError("Invalid event type {0} reported.".format(event))                
