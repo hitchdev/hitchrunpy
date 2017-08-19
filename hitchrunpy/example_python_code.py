@@ -91,23 +91,23 @@ class ExamplePythonCode(object):
                 if self._expect_exception:
                     if error_details['exception_type'] != self._exception_type:
                         raise exceptions.ExpectedExceptionWasDifferent((
-                            "Expected exception '{0}', instead "
-                            "'{1}' was raised."
+                            u"Expected exception '{0}', instead "
+                            u"'{1}' was raised."
                         ).format(self._exception_type, error_details['exception_type']))
 
                     if error_details['text'] == self._exception_text:
                         return
                     else:
                         raise exceptions.ExpectedExceptionMessageWasDifferent((
-                            "Expected exception '{0}' was raised, but message was different.\n"
-                            "\n"
-                            "ACTUAL:\n"
-                            "{1}\n"
-                            "\n"
-                            "EXPECTED:\n"
-                            "{2}\n"
-                            "DIFF:\n"
-                            "{3}"
+                            u"Expected exception '{0}' was raised, but message was different.\n"
+                            u"\n"
+                            u"ACTUAL:\n"
+                            u"{1}\n"
+                            u"\n"
+                            u"EXPECTED:\n"
+                            u"{2}\n"
+                            u"DIFF:\n"
+                            u"{3}"
                         ).format(
                             self._exception_type,
                             error_details['text'],
@@ -126,15 +126,15 @@ class ExamplePythonCode(object):
                     )
             elif error_details['event'] == "notequal":
                 raise exceptions.NotEqual((
-                  "'{0}' is not equal to '{1}'.\n"
-                  "\n"
-                  "'{0}' is:\n"
-                  "{2}\n"
-                  "\n"
-                  "'{1}' is:\n"
-                  "{3}"
-                  "DIFF:\n"
-                  "{4}"
+                  u"'{0}' is not equal to '{1}'.\n"
+                  u"\n"
+                  u"'{0}' is:\n"
+                  u"{2}\n"
+                  u"\n"
+                  u"'{1}' is:\n"
+                  u"{3}"
+                  u"DIFF:\n"
+                  u"{4}"
                 ).format(
                     self._lhs,
                     self._rhs,
