@@ -374,7 +374,7 @@ def deploy(version):
     """
     Deploy to pypi as specified version.
     """
-    NAME = "hitchstory"
+    NAME = "hitchrunpy"
     git = Command("git").in_dir(DIR.project)
     version_file = DIR.project.joinpath("VERSION")
     old_version = version_file.bytes().decode('utf8')
