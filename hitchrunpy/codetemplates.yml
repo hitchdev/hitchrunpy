@@ -10,8 +10,15 @@ base: |
   try:
       {{ setup|indent(4) }}
   except Exception as error:
+      import json
+
       with open("{{ error_path }}", "w") as handle:
-          handle.write(unicode(error))
+          handle.write(json.dumps({
+              "exception_type": "{}.{}".format(
+                  type(error).__module__, type(error).__name__
+              ),
+              "text": unicode(error),
+          }))
   {% endif %}
   
   {% block main %}
@@ -24,8 +31,15 @@ is_equal: |
   try:
       ({{ lhs }}).should.be.equal({{ rhs }})
   except Exception as error:
+      import json
+
       with open("{{ error_path }}", "w") as handle:
-          handle.write(unicode(error))
+          handle.write(json.dumps({
+              "exception_type": "{}.{}".format(
+                  type(error).__module__, type(error).__name__
+              ),
+              "text": unicode(error),
+          }))
   {% endblock %}
 run_code: |
   {% extends 'base' %}
@@ -34,6 +48,13 @@ run_code: |
   try:
       {{ code|indent(4) }}
   except Exception as error:
+      import json
+
       with open("{{ error_path }}", "w") as handle:
-          handle.write(unicode(error))
+          handle.write(json.dumps(
+              "exception_type": "{}.{}".format(
+                  type(error).__module__, type(error).__name__
+              ),
+              "text": unicode(error),
+          ))
   {% endblock %}

@@ -4,6 +4,7 @@ from commandlib import Command
 from jinja2 import DictLoader
 from strictyaml import load
 from path import Path
+import json
 
 HITCHRUNPY_DIR = Path(__file__).dirname().abspath()
 
@@ -30,7 +31,7 @@ class ExamplePythonCode(object):
         self._lhs = None
         self._rhs = None
         
-        self._exception_full_name = None
+        self._exception_type = None
         self._exception_text = None
         self._expect_exception = False
     
@@ -42,10 +43,10 @@ class ExamplePythonCode(object):
         new_expyc._is_equal = True
         return new_expyc
 
-    def expect_exception(self, full_name, text):
+    def expect_exception(self, exception_type, text):
         # TODO : Make this fail if is_equal is used.
         new_expyc = copy(self)
-        new_expyc._exception_full_name = full_name
+        new_expyc._exception_type = exception_type
         new_expyc._exception_text = text
         new_expyc._expect_exception = True
         return new_expyc
@@ -86,7 +87,15 @@ class ExamplePythonCode(object):
         
         if self._expect_exception:
             if error_path.exists():
-                if error_path.bytes().decode('utf8') == self._exception_text:
+                error_details = json.loads(error_path.bytes().decode('utf8'))
+                
+                if error_details['exception_type'] != self._exception_type:
+                    raise ExpectedExceptionWasDifferent((
+                        "Expected exception '{0}', instead "
+                        "'{1}' was raised."
+                    ).format(self._exception_type, error_details['exception_type']))
+            
+                if error_details['text'] == self._exception_text:
                     return
                 else:
                     raise ExpectedExceptionWasDifferent("expected exception but was different")
@@ -94,6 +103,7 @@ class ExamplePythonCode(object):
                 raise ExpectedExceptionButWasNoException("expected exception but was no exception")
         else:
             if error_path.exists():
-                raise UnexpectedException(error_path.bytes().decode('utf8'))
+                error_details = json.loads(error_path.bytes().decode('utf8'))
+                raise UnexpectedException(error_details['text'])
         
         
