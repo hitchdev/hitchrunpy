@@ -6,7 +6,9 @@ from strictyaml import load
 from path import Path
 import json
 
+
 HITCHRUNPY_DIR = Path(__file__).dirname().abspath()
+
 
 class HitchRunPyException(Exception):
     pass
@@ -18,6 +20,11 @@ class UnexpectedException(HitchRunPyException):
 
 class ExpectedExceptionWasDifferent(HitchRunPyException):
     pass
+
+
+class ExpectedExceptionMessageWasDifferent(HitchRunPyException):
+    pass
+
 
 class ExpectedExceptionButWasNoException(HitchRunPyException):
     pass
@@ -98,7 +105,19 @@ class ExamplePythonCode(object):
                 if error_details['text'] == self._exception_text:
                     return
                 else:
-                    raise ExpectedExceptionWasDifferent("expected exception but was different")
+                    raise ExpectedExceptionMessageWasDifferent((
+                        "Expected exception '{0}' was raised, but message was different.\n"
+                        "\n"
+                        "ACTUAL:\n"
+                        "{1}\n"
+                        "\n"
+                        "EXPECTED:\n"
+                        "{2}"
+                    ).format(
+                        self._exception_type,
+                        error_details['text'],
+                        self._exception_text,
+                    ))
             else:
                 raise ExpectedExceptionButWasNoException("expected exception but was no exception")
         else:
