@@ -24,3 +24,7 @@ class NotEqual(HitchRunPyException):
 
 class OutputAppearsDifferent(HitchRunPyException):
     pass
+
+
+class ErrorRunningCode(HitchRunPyException):
+    pass

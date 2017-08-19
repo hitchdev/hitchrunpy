@@ -89,7 +89,9 @@ class ExamplePythonCode(object):
         try:
             command_output = pycommand(example_python_code).in_dir(working_dir).output().strip()
         except CommandError as command_error:
-            pass
+            raise exceptions.ErrorRunningCode(
+                "Error running code. Output:\n\n{0}".format(command_error)
+            )
 
         if self._expected_output is not None:
             if self._expected_output != command_output:

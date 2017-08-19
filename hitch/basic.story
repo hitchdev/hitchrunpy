@@ -17,6 +17,20 @@ Run code:
         contents: exampletext
 
 
+Error running code:
+  preconditions:
+    code: |
+      from hitchrunpy import ExamplePythonCode
+      from commandlib import python
+      
+      working_dir = '{{ working_dir }}'
+      
+      ExamplePythonCode('''x =''').run(working_dir, python)
+  scenario:
+    - Raises exception: Error running code
+  
+
+
 Unexpected exception:
   preconditions:
     code: |
