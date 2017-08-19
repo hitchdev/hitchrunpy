@@ -46,6 +46,13 @@ class ExamplePythonCode(object):
         self._exception_type = None
         self._exception_text = None
         self._expect_exception = False
+        
+        self._setup_code = u''
+    
+    def with_setup_code(self, setup_code):
+        new_expyc = copy(self)
+        new_expyc._setup_code = setup_code
+        return new_expyc
     
     def is_equal(self, lhs, rhs):
         # TODO : Make this fail if expect_exception is used.
@@ -78,14 +85,16 @@ class ExamplePythonCode(object):
         
         if self._is_equal:
             example_python_code.write_text(env.get_template("is_equal").render(
-                setup=self._code,
+                setup_code=self._setup_code,
+                code=self._code,
                 lhs=self._lhs,
                 rhs=self._rhs,
                 error_path=error_path,
             ))
         else:
             example_python_code.write_text(env.get_template("base").render(
-                setup=self._code,
+                setup_code=self._setup_code,
+                code=self._code,
                 error_path=error_path,
             ))
             

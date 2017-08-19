@@ -16,9 +16,11 @@ base: |
           }))
   
   
-  {% if setup %}
+  {% if code %}
   try:
-      {{ setup|indent(4) }}
+      {{ setup_code|indent(4) }}
+
+      {{ code|indent(4) }}
   except Exception as error:
       import json
 
@@ -53,21 +55,4 @@ is_equal: |
               ),
               "text": unicode(error),
           }))
-  {% endblock %}
-run_code: |
-  {% extends 'base' %}
-
-  {% block main %}
-  try:
-      {{ code|indent(4) }}
-  except Exception as error:
-      import json
-
-      with open("{{ error_path }}", "w") as handle:
-          handle.write(json.dumps(
-              "exception_type": "{}.{}".format(
-                  type(error).__module__, type(error).__name__
-              ),
-              "text": unicode(error),
-          ))
   {% endblock %}
