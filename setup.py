@@ -16,7 +16,7 @@ def read(*parts):
 
 setup(name="hitchrunpy",
       version=read('VERSION').replace('\n', ''),
-      description="Tools to test python code with hitchstory.",
+      description="Tools to run and interact with python code.",
       long_description=read('README.rst'),
       classifiers=[
           'Development Status :: 4 - Beta',
@@ -25,9 +25,6 @@ setup(name="hitchrunpy",
           'Topic :: Text Processing :: Markup',
           'Topic :: Software Development :: Libraries',
           'Natural Language :: English',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.6',
-          'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.1',
           'Programming Language :: Python :: 3.2',
