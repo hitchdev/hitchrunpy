@@ -1,1 +1,2 @@
 Error in __repr__ in is_equal.
+Use icommandlib and handle events via it.
