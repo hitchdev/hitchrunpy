@@ -1,38 +1,14 @@
-from copy import copy
-from jinja2.environment import Environment
+from jinja2 import DictLoader, environment
+from hitchrunpy import exceptions
 from commandlib import Command
-from jinja2 import DictLoader
 from strictyaml import load
 from path import Path
+from copy import copy
 import difflib
 import json
 
 
 HITCHRUNPY_DIR = Path(__file__).dirname().abspath()
-
-
-class HitchRunPyException(Exception):
-    pass
-
-
-class UnexpectedException(HitchRunPyException):
-    pass
-
-
-class ExpectedExceptionWasDifferent(HitchRunPyException):
-    pass
-
-
-class ExpectedExceptionMessageWasDifferent(HitchRunPyException):
-    pass
-
-
-class ExpectedExceptionButNoExceptionOccurred(HitchRunPyException):
-    pass
-
-
-class NotEqual(HitchRunPyException):
-    pass
 
 
 class ExamplePythonCode(object):
@@ -86,7 +62,7 @@ class ExamplePythonCode(object):
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
 
-        env = Environment()
+        env = environment.Environment()
         env.loader = DictLoader(
             load(HITCHRUNPY_DIR.joinpath("codetemplates.yml").bytes().decode('utf8')).data
         )
@@ -114,7 +90,7 @@ class ExamplePythonCode(object):
             if error_details['event'] == "exception":
                 if self._expect_exception:
                     if error_details['exception_type'] != self._exception_type:
-                        raise ExpectedExceptionWasDifferent((
+                        raise exceptions.ExpectedExceptionWasDifferent((
                             "Expected exception '{0}', instead "
                             "'{1}' was raised."
                         ).format(self._exception_type, error_details['exception_type']))
@@ -122,7 +98,7 @@ class ExamplePythonCode(object):
                     if error_details['text'] == self._exception_text:
                         return
                     else:
-                        raise ExpectedExceptionMessageWasDifferent((
+                        raise exceptions.ExpectedExceptionMessageWasDifferent((
                             "Expected exception '{0}' was raised, but message was different.\n"
                             "\n"
                             "ACTUAL:\n"
@@ -142,14 +118,14 @@ class ExamplePythonCode(object):
                             ))
                         ))
                 else:
-                    raise UnexpectedException(
+                    raise exceptions.UnexpectedException(
                         "Unexpected exception '{0}' raised. Message:\n{1}".format(
                             error_details['exception_type'],
                             error_details['text'],
                         )
                     )
             elif error_details['event'] == "notequal":
-                raise NotEqual((
+                raise exceptions.NotEqual((
                   "'{0}' is not equal to '{1}'.\n"
                   "\n"
                   "'{0}' is:\n"
@@ -175,7 +151,7 @@ class ExamplePythonCode(object):
                 )
         else:
             if self._expect_exception:
-                raise ExpectedExceptionButNoExceptionOccurred(
+                raise exceptions.ExpectedExceptionButNoExceptionOccurred(
                     "Expected exception '{0}', but no exception occurred.".format(
                         self._exception_type,
                     )
