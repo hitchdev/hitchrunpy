@@ -1,6 +1,6 @@
 from jinja2 import FileSystemLoader, environment
+from commandlib import Command, CommandError
 from hitchrunpy import exceptions
-from commandlib import Command
 from path import Path
 from copy import copy
 import difflib
@@ -21,6 +21,8 @@ class ExamplePythonCode(object):
         self._exception_type = None
         self._exception_text = None
         self._expect_exception = False
+
+        self._expected_output = None
 
         self._setup_code = u''
 
@@ -43,6 +45,11 @@ class ExamplePythonCode(object):
         new_expyc._exception_type = exception_type
         new_expyc._exception_text = text
         new_expyc._expect_exception = True
+        return new_expyc
+
+    def expect_output(self, output):
+        new_expyc = copy(self)
+        new_expyc._expected_output = output
         return new_expyc
 
     def run(self, working_dir, python_bin):
@@ -79,7 +86,23 @@ class ExamplePythonCode(object):
                 error_path=error_path,
             ))
 
-        pycommand(example_python_code).in_dir(working_dir).run()
+        try:
+            command_output = pycommand(example_python_code).in_dir(working_dir).output().strip()
+        except CommandError as command_error:
+            pass
+
+        if self._expected_output is not None:
+            if self._expected_output != command_output:
+                raise exceptions.OutputAppearsDifferent((
+                    'EXPECTED:\n'
+                    '{0}\n'
+                    '\n'
+                    'ACTUAL:\n'
+                    '{1}'
+                ).format(
+                    self._expected_output,
+                    command_output,
+                ))
 
         if error_path.exists():
             error_details = json.loads(error_path.bytes().decode('utf8'))

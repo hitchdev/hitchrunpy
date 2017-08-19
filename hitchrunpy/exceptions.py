@@ -20,3 +20,7 @@ class ExpectedExceptionButNoExceptionOccurred(HitchRunPyException):
 
 class NotEqual(HitchRunPyException):
     pass
+
+
+class OutputAppearsDifferent(HitchRunPyException):
+    pass
