@@ -127,6 +127,11 @@ class ExamplePythonCode(object):
         else:
             if error_path.exists():
                 error_details = json.loads(error_path.bytes().decode('utf8'))
-                raise UnexpectedException(error_details['text'])
+                raise UnexpectedException(
+                    "Unexpected exception '{0}' raised. Message:\n{1}".format(
+                        error_details['exception_type'],
+                        error_details['text'],
+                    )
+                )
         
         
