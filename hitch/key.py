@@ -117,50 +117,51 @@ class Engine(BaseEngine):
     
     
     def raises_exception(self, message=None, exception_type=None):
-        #try:
-            #ExamplePythonCode(
-                #self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
-            #).with_setup_code(self.preconditions.get('setup', ''))\
-             #.expect_exception(exception_type, message)\
-             #.run(self.path.state, self.python)
-        #except hitchrunpyexceptions.ExpectedExceptionMessageWasDifferent as exception:
-            #self.current_step.update(message="")
+        try:
+            ExamplePythonCode(
+                self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
+            ).with_setup_code(self.preconditions.get('setup', ''))\
+             .expect_exception(exception_type, message)\
+             .run(self.path.state, self.python)
+        except hitchrunpyexceptions.ExpectedExceptionMessageWasDifferent as exception:
+            import IPython ; IPython.embed()
+            self.current_step.update(message=exception.actual_message)
         
-        exception = message
-        from jinja2.environment import Environment
-        from jinja2 import DictLoader
-        from strictyaml import load
+        #exception = message
+        #from jinja2.environment import Environment
+        #from jinja2 import DictLoader
+        #from strictyaml import load
 
-        class ExpectedExceptionDidNotHappen(Exception):
-            pass
+        #class ExpectedExceptionDidNotHappen(Exception):
+            #pass
         
-        error_path = self.path.state.joinpath("error.txt")
-        runpy = self.path.state.joinpath("runmypy.py")
-        if error_path.exists():
-            error_path.remove()
-        env = Environment()
-        env.loader = DictLoader(
-            load(self.path.key.joinpath("codetemplates.yml").bytes().decode('utf8')).data
-        )
-        runpy.write_text(env.get_template("run_code").render(
-            setup=self.preconditions.get('setup', ''),
-            code=self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir),
-            error_path=error_path,
-        ))
-        self.python(runpy).in_dir(self.path.state).run()
-        if not error_path.exists():
-            raise ExpectedExceptionDidNotHappen()
-        else:
-            import difflib
-            actual_error = error_path.bytes().decode('utf8')
-            if not exception.strip() in actual_error:
-                raise Exception(
-                    "actual:\n{0}\nexpected:\n{1}\ndiff:\n{2}".format(
-                        actual_error,
-                        exception,
-                        ''.join(difflib.context_diff(exception, actual_error)),
-                    )
-                )
+        #error_path = self.path.state.joinpath("error.txt")
+        #runpy = self.path.state.joinpath("runmypy.py")
+        #if error_path.exists():
+            #error_path.remove()
+        #env = Environment()
+        #env.loader = DictLoader(
+            #load(self.path.key.joinpath("codetemplates.yml").bytes().decode('utf8')).data
+        #)
+        #runpy.write_text(env.get_template("run_code").render(
+            #setup=self.preconditions.get('setup', ''),
+            #code=self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir),
+            #error_path=error_path,
+        #))
+        #self.python(runpy).in_dir(self.path.state).run()
+        #if not error_path.exists():
+            #raise ExpectedExceptionDidNotHappen()
+        #else:
+            #import difflib
+            #actual_error = error_path.bytes().decode('utf8')
+            #if not exception.strip() in actual_error:
+                #raise Exception(
+                    #"actual:\n{0}\nexpected:\n{1}\ndiff:\n{2}".format(
+                        #actual_error,
+                        #exception,
+                        #''.join(difflib.context_diff(exception, actual_error)),
+                    #)
+                #)
 
 
     def run_command(self, command):

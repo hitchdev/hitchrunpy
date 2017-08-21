@@ -1,5 +1,3 @@
-
-
 Exception occurs as expected:
   preconditions:
     code: |
