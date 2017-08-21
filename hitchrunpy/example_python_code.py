@@ -120,25 +120,15 @@ class ExamplePythonCode(object):
                     if error_details['text'] == self._exception_text:
                         return
                     else:
-                        raise exceptions.ExpectedExceptionMessageWasDifferent((
-                            u"Expected exception '{0}' was raised, but message was different.\n"
-                            u"\n"
-                            u"ACTUAL:\n"
-                            u"{1}\n"
-                            u"\n"
-                            u"EXPECTED:\n"
-                            u"{2}\n"
-                            u"DIFF:\n"
-                            u"{3}"
-                        ).format(
+                        raise exceptions.ExpectedExceptionMessageWasDifferent(
                             self._exception_type,
                             error_details['text'],
                             self._exception_text,
                             ''.join(difflib.ndiff(
                                 error_details['text'].splitlines(1),
                                 self._exception_text.splitlines(1)
-                            ))
-                        ))
+                            )),
+                        )
                 else:
                     raise exceptions.UnexpectedException(
                         "Unexpected exception '{0}' raised. Message:\n{1}".format(
