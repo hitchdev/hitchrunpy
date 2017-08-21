@@ -14,6 +14,7 @@ from simex import DefaultSimex
 from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
+from hitchrunpy import ExamplePythonCode, exceptions as hitchrunpyexceptions
 
 
 class Engine(BaseEngine):
@@ -21,11 +22,6 @@ class Engine(BaseEngine):
 
     schema = StorySchema(
         preconditions=Map({
-            #"files": MapPattern(Str(), Str()),
-            #Optional("example.story"): Str(),
-            #Optional("example1.story"): Str(),
-            #Optional("example2.story"): Str(),
-            #"setup": Str(),
             "code": Str(),
         }),
         about={
@@ -86,56 +82,51 @@ class Engine(BaseEngine):
             if changed:
                 self.pip("uninstall", "hitchrunpy", "-y").ignore_errors().run()
                 self.pip("install", ".").in_dir(self.path.project).run()
-
-        #self.services = hitchserve.ServiceBundle(
-            #str(self.path.project),
-            #startup_timeout=8.0,
-            #shutdown_timeout=1.0
-        #)
-
-        #self.services['IPython'] = hitchpython.IPythonKernelService(self.python_package)
-
-        #self.services.startup(interactive=False)
-        #self.ipython_kernel_filename = self.services['IPython'].wait_and_get_ipykernel_filename()
-        #self.ipython_step_library = hitchpython.IPythonStepLibrary()
-        #self.ipython_step_library.startup_connection(self.ipython_kernel_filename)
-
-        #self.shutdown_connection = self.ipython_step_library.shutdown_connection
-        #self.ipython_step_library.run("import os")
-        #self.ipython_step_library.run("from path import Path")
-        #self.ipython_step_library.run("os.chdir('{}')".format(self.path.state))
-        #self.ipython_step_library.run("from code_that_does_things import output")
     
     def run_code(self):
-        from jinja2.environment import Environment
-        from jinja2 import DictLoader
-        from strictyaml import load
+        ExamplePythonCode(
+            self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
+        ).with_setup_code(self.preconditions.get('setup', ''))\
+         .run(self.path.state, self.python)
+        #from jinja2.environment import Environment
+        #from jinja2 import DictLoader
+        #from strictyaml import load
 
-        class UnexpectedException(Exception):
-            pass
+        #class UnexpectedException(Exception):
+            #pass
         
-        error_path = self.path.state.joinpath("error.txt")
-        runpy = self.path.state.joinpath("runmypy.py")
-        if error_path.exists():
-            error_path.remove()
-        env = Environment()
-        env.loader = DictLoader(
-            load(self.path.key.joinpath("codetemplates.yml").bytes().decode('utf8')).data
-        )
-        runpy.write_text(env.get_template("run_code").render(
-            setup=self.preconditions.get('setup', ''),
-            code=self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir),
-            error_path=error_path,
-        ))
-        self.python(runpy).in_dir(self.path.state).run()
-        if error_path.exists():
-            raise UnexpectedException(error_path.bytes().decode('utf8'))
+        #error_path = self.path.state.joinpath("error.txt")
+        #runpy = self.path.state.joinpath("runmypy.py")
+        #if error_path.exists():
+            #error_path.remove()
+        #env = Environment()
+        #env.loader = DictLoader(
+            #load(self.path.key.joinpath("codetemplates.yml").bytes().decode('utf8')).data
+        #)
+        #runpy.write_text(env.get_template("run_code").render(
+            #setup=self.preconditions.get('setup', ''),
+            #code=self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir),
+            #error_path=error_path,
+        #))
+        #self.python(runpy).in_dir(self.path.state).run()
+        #if error_path.exists():
+            #raise UnexpectedException(error_path.bytes().decode('utf8'))
     
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
     
     
-    def raises_exception(self, exception):
+    def raises_exception(self, message=None, exception_type=None):
+        #try:
+            #ExamplePythonCode(
+                #self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
+            #).with_setup_code(self.preconditions.get('setup', ''))\
+             #.expect_exception(exception_type, message)\
+             #.run(self.path.state, self.python)
+        #except hitchrunpyexceptions.ExpectedExceptionMessageWasDifferent as exception:
+            #self.current_step.update(message="")
+        
+        exception = message
         from jinja2.environment import Environment
         from jinja2 import DictLoader
         from strictyaml import load

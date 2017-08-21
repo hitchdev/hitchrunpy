@@ -78,14 +78,17 @@ Expected exception has different message:
       
       """).expect_exception("__main__.CustomException", 'This was\nthe expected message').run(working_dir, python)
   scenario:
-    - Raises Exception: |
-        Expected exception '__main__.CustomException' was raised, but message was different.
-        
-        ACTUAL:
-        This was not
-        the expected message.
-        
-        EXPECTED:
-        This was
-        the expected message
+    - Raises Exception: 
+        exception_type: hitchrunpy.exceptions.ExpectedExceptionMessageWasDifferent
+        message: |
+          Expected exception '__main__.CustomException' was raised, but message was different.
+          
+          ACTUAL:
+          This was not
+          the expected message.
+
+          EXPECTED:
+          This was
+          the expected message
+
         
