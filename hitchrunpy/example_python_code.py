@@ -40,7 +40,7 @@ class ExamplePythonCode(object):
         new_expyc._is_equal = True
         return new_expyc
 
-    def expect_exception(self, exception_type, text):
+    def expect_exception(self, exception_type=None, text=None):
         # TODO : Make this fail if is_equal is used.
         new_expyc = copy(self)
         new_expyc._exception_type = exception_type
@@ -116,24 +116,24 @@ class ExamplePythonCode(object):
 
             if error_details['event'] == "exception":
                 if self._expect_exception:
-                    if error_details['exception_type'] != self._exception_type:
-                        raise exceptions.ExpectedExceptionWasDifferent((
-                            u"Expected exception '{0}', instead "
-                            u"'{1}' was raised."
-                        ).format(self._exception_type, error_details['exception_type']))
+                    if self._exception_type is not None:
+                        if error_details['exception_type'] != self._exception_type:
+                            raise exceptions.ExpectedExceptionWasDifferent((
+                                u"Expected exception '{0}', instead "
+                                u"'{1}' was raised."
+                            ).format(self._exception_type, error_details['exception_type']))
 
-                    if error_details['text'] == self._exception_text:
-                        return
-                    else:
-                        raise exceptions.ExpectedExceptionMessageWasDifferent(
-                            self._exception_type,
-                            error_details['text'],
-                            self._exception_text,
-                            ''.join(difflib.ndiff(
-                                error_details['text'].splitlines(1),
-                                self._exception_text.splitlines(1)
-                            )),
-                        )
+                    if self._exception_text is not None:
+                        if error_details['text'] != self._exception_text:
+                            raise exceptions.ExpectedExceptionMessageWasDifferent(
+                                self._exception_type,
+                                error_details['text'],
+                                self._exception_text,
+                                ''.join(difflib.ndiff(
+                                    error_details['text'].splitlines(1),
+                                    self._exception_text.splitlines(1)
+                                )),
+                            )
                 else:
                     raise exceptions.UnexpectedException(
                         "Unexpected exception '{0}' raised. Message:\n{1}".format(
