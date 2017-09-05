@@ -117,15 +117,13 @@ class Engine(BaseEngine):
     
     
     def raises_exception(self, message=None, exception_type=None):
-        try:
-            ExamplePythonCode(
-                self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
-            ).with_setup_code(self.preconditions.get('setup', ''))\
-             .expect_exception(exception_type, message)\
-             .run(self.path.state, self.python)
-        except hitchrunpyexceptions.ExpectedExceptionMessageWasDifferent as exception:
-            import IPython ; IPython.embed()
-            self.current_step.update(message=exception.actual_message)
+        ExamplePythonCode(
+            self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
+        ).with_setup_code(self.preconditions.get('setup', ''))\
+          .expect_exception(exception_type, message.strip())\
+          .run(self.path.state, self.python)
+        #except hitchrunpyexceptions.ExpectedExceptionMessageWasDifferent as exception:
+            #self.current_step.update(message=exception.actual_message)
         
         #exception = message
         #from jinja2.environment import Environment

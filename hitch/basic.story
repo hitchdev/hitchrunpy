@@ -27,8 +27,17 @@ Error running code:
       
       ExamplePythonCode('''x =''').run(working_dir, python)
   scenario:
-    - Raises exception: Error running code
-  
+    - Raises exception:
+        exception type: hitchrunpy.exceptions.ErrorRunningCode
+        message: |
+          Error running code. Output:
+
+            File "example_python_code.py", line 22
+              x =
+                ^
+          SyntaxError: invalid syntax
+          
+
 
 
 Unexpected exception:
@@ -45,7 +54,11 @@ Unexpected exception:
       
       """).run(working_dir, python)
   scenario:
-    - Raises exception: This should not happen
+    - Raises exception:
+        exception type: hitchrunpy.exceptions.UnexpectedException
+        message: |
+          Unexpected exception 'builtins.Exception' raised. Message:
+          This should not happen
 
 
 Setup code:

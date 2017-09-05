@@ -20,9 +20,11 @@ Print message appears differently:
       
       ExamplePythonCode('''print("goodbye")''').expect_output('hello').run(working_dir, python)
   scenario:
-    - Raises Exception: |
-        EXPECTED:
-        hello
-        
-        ACTUAL:
-        goodbye
+    - Raises Exception:
+        exception type: hitchrunpy.exceptions.OutputAppearsDifferent
+        message: |
+          EXPECTED:
+          hello
+          
+          ACTUAL:
+          goodbye

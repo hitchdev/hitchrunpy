@@ -23,11 +23,14 @@ Is equal does not match:
       y = 5
       ''').is_equal("x", "y").run(working_dir, python)
   scenario:
-    - Raises Exception: |
-        'x' is not equal to 'y'.
-        
-        'x' is:
-        4
-        
-        'y' is:
-        5
+    - Raises Exception:
+        exception type: hitchrunpy.exceptions.NotEqual
+        message: |
+          'x' is not equal to 'y'.
+
+          'x' is:
+          4
+
+          'y' is:
+          5DIFF:
+          - 4+ 5

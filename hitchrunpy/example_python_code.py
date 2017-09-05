@@ -1,5 +1,6 @@
 from jinja2 import FileSystemLoader, environment
-from commandlib import Command, CommandError
+from commandlib import Command
+from commandlib import exceptions as command_exception
 from hitchrunpy import exceptions
 from path import Path
 from copy import copy
@@ -88,9 +89,13 @@ class ExamplePythonCode(object):
 
         try:
             command_output = pycommand(example_python_code).in_dir(working_dir).output().strip()
-        except CommandError as command_error:
+        except command_exception.CommandExitError as command_error:
+            error_message = command_error.stderr.replace(
+                str(working_dir.joinpath("examplepythoncode.py").abspath()),
+                "example_python_code.py"
+            ).rstrip()
             raise exceptions.ErrorRunningCode(
-                "Error running code. Output:\n\n{0}".format(command_error)
+                "Error running code. Output:\n\n{0}".format(error_message)
             )
 
         if self._expected_output is not None:
