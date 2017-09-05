@@ -38,7 +38,8 @@ Expected exception was different:
     - Raises Exception:
         exception type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
         message: |
-          Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised.
+          Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
+          This should happen
 
 
 Expect exception with no details:

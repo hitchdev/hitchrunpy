@@ -120,8 +120,12 @@ class ExamplePythonCode(object):
                         if error_details['exception_type'] != self._exception_type:
                             raise exceptions.ExpectedExceptionWasDifferent((
                                 u"Expected exception '{0}', instead "
-                                u"'{1}' was raised."
-                            ).format(self._exception_type, error_details['exception_type']))
+                                u"'{1}' was raised:\n{2}"
+                            ).format(
+                                self._exception_type,
+                                error_details['exception_type'],
+                                error_details['text'],
+                            ))
 
                     if self._exception_text is not None:
                         if error_details['text'] != self._exception_text:
