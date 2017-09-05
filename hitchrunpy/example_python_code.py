@@ -25,6 +25,8 @@ class ExamplePythonCode(object):
 
         self._expected_output = None
 
+        self._long_strings = None
+
         self._setup_code = u''
 
     def with_setup_code(self, setup_code):
@@ -46,6 +48,11 @@ class ExamplePythonCode(object):
         new_expyc._exception_type = exception_type
         new_expyc._exception_text = text
         new_expyc._expect_exception = True
+        return new_expyc
+
+    def with_long_strings(self, **strings):
+        new_expyc = copy(self)
+        new_expyc._long_strings = strings
         return new_expyc
 
     def expect_output(self, output):
@@ -74,6 +81,7 @@ class ExamplePythonCode(object):
 
         if self._is_equal:
             example_python_code.write_text(env.get_template("is_equal.jinja2").render(
+                long_strings=self._long_strings,
                 setup_code=self._setup_code,
                 code=self._code,
                 lhs=self._lhs,
@@ -82,6 +90,7 @@ class ExamplePythonCode(object):
             ))
         else:
             example_python_code.write_text(env.get_template("base.jinja2").render(
+                long_strings=self._long_strings,
                 setup_code=self._setup_code,
                 code=self._code,
                 error_path=error_path,
