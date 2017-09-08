@@ -24,13 +24,14 @@ Exception matches lambda:
 
       raise CustomException('This should happen')
       
-      """).exception_matches(
-          lambda exception: exception.exception_type == "__main__.CustomException" and\
-                            exception.message == "This should happen"
+      """).expect_exception(
+          exception_type="__main__.CustomException",
+          match_function=lambda exception: exception.message == "This should happen"
       )\
           .run(working_dir, python)
   scenario:
     - Run code
+
 
 Exception does not match lambda:
   based on: hitchrunpy
@@ -43,9 +44,9 @@ Exception does not match lambda:
 
       raise CustomException('This should happen')
       
-      """).exception_matches(
-          lambda exception: exception.exception_type == "__main__.CustomException" and\
-                            exception.message == "Message is different"
+      """).expect_exception(
+          exception_type="__main__.CustomException",
+          match_function=lambda exception: exception.message == "Message is different"
       )\
           .run(working_dir, python)
   scenario:

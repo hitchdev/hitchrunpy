@@ -49,18 +49,13 @@ class ExamplePythonCode(object):
         new_expyc._is_equal = True
         return new_expyc
 
-    def expect_exception(self, exception_type=None, text=None):
+    def expect_exception(self, exception_type=None, text=None, match_function=None):
         # TODO : Make this fail if is_equal is used.
         new_expyc = copy(self)
         new_expyc._exception_type = exception_type
         new_expyc._exception_text = text
-        new_expyc._expect_exception = True
-        return new_expyc
-
-    def exception_matches(self, match_function):
-        new_expyc = copy(self)
-        new_expyc._expect_exception = True
         new_expyc._exception_match_function = match_function
+        new_expyc._expect_exception = True
         return new_expyc
 
     def with_long_strings(self, **strings):
