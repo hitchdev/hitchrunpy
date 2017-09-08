@@ -50,20 +50,7 @@ class Engine(BaseEngine):
         if self.path.working_dir.exists():
             self.path.working_dir.rmtree(ignore_errors=True)
         self.path.working_dir.mkdir()
-
-        #self.path.key.joinpath("code_that_does_things.py").copy(self.path.state)
         
-        for filename in ["example.story", "example1.story", "example2.story"]:
-            if filename in self.preconditions:
-                self.path.state.joinpath(filename).write_text(self.preconditions[filename])
-        
-
-        for filename, text in self.preconditions.get("files", {}).items():
-            filepath = self.path.state.joinpath(filename)
-            if not filepath.dirname().exists():
-                filepath.dirname().mkdir()
-            filepath.write_text(text)
-
         self.python_package = hitchpython.PythonPackage(
             self.preconditions.get('python_version', '3.5.0')
         )
@@ -88,33 +75,9 @@ class Engine(BaseEngine):
             self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
         ).with_setup_code(self.preconditions.get('setup', ''))\
          .run(self.path.state, self.python)
-        #from jinja2.environment import Environment
-        #from jinja2 import DictLoader
-        #from strictyaml import load
-
-        #class UnexpectedException(Exception):
-            #pass
-        
-        #error_path = self.path.state.joinpath("error.txt")
-        #runpy = self.path.state.joinpath("runmypy.py")
-        #if error_path.exists():
-            #error_path.remove()
-        #env = Environment()
-        #env.loader = DictLoader(
-            #load(self.path.key.joinpath("codetemplates.yml").bytes().decode('utf8')).data
-        #)
-        #runpy.write_text(env.get_template("run_code").render(
-            #setup=self.preconditions.get('setup', ''),
-            #code=self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir),
-            #error_path=error_path,
-        #))
-        #self.python(runpy).in_dir(self.path.state).run()
-        #if error_path.exists():
-            #raise UnexpectedException(error_path.bytes().decode('utf8'))
     
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
-    
     
     def raises_exception(self, message=None, exception_type=None):
         ExamplePythonCode(
@@ -122,182 +85,15 @@ class Engine(BaseEngine):
         ).with_setup_code(self.preconditions.get('setup', ''))\
           .expect_exception(exception_type, message.strip())\
           .run(self.path.state, self.python)
-        #except hitchrunpyexceptions.ExpectedExceptionMessageWasDifferent as exception:
-            #self.current_step.update(message=exception.actual_message)
-        
-        #exception = message
-        #from jinja2.environment import Environment
-        #from jinja2 import DictLoader
-        #from strictyaml import load
-
-        #class ExpectedExceptionDidNotHappen(Exception):
-            #pass
-        
-        #error_path = self.path.state.joinpath("error.txt")
-        #runpy = self.path.state.joinpath("runmypy.py")
-        #if error_path.exists():
-            #error_path.remove()
-        #env = Environment()
-        #env.loader = DictLoader(
-            #load(self.path.key.joinpath("codetemplates.yml").bytes().decode('utf8')).data
-        #)
-        #runpy.write_text(env.get_template("run_code").render(
-            #setup=self.preconditions.get('setup', ''),
-            #code=self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir),
-            #error_path=error_path,
-        #))
-        #self.python(runpy).in_dir(self.path.state).run()
-        #if not error_path.exists():
-            #raise ExpectedExceptionDidNotHappen()
-        #else:
-            #import difflib
-            #actual_error = error_path.bytes().decode('utf8')
-            #if not exception.strip() in actual_error:
-                #raise Exception(
-                    #"actual:\n{0}\nexpected:\n{1}\ndiff:\n{2}".format(
-                        #actual_error,
-                        #exception,
-                        #''.join(difflib.context_diff(exception, actual_error)),
-                    #)
-                #)
-
-
-    def run_command(self, command):
-        self.ipython_step_library.run(command)
-        self.doc.step("code", command=command)
-
-    def variable(self, name, value):
-        self.path.state.joinpath("{}.yaml".format(name)).write_text(
-            value
-        )
-        self.ipython_step_library.run(
-            """{} = Path("{}").bytes().decode("utf8")""".format(
-                name, "{}.yaml".format(name)
-            )
-        )
-        self.doc.step("variable", var_name=name, value=value)
-
-    def code(self, command):
-        self.ipython_step_library.run(command)
-        self.doc.step("code", command=command)
-
-
-    def returns_true(self, command, why=''):
-        self.ipython_step_library.assert_true(command)
-        self.doc.step("true", command=command, why=why)
-
-    def assert_true(self, command):
-        self.ipython_step_library.assert_true(command)
-        self.doc.step("true", command=command)
-
-    def assert_exception(self, command, exception):
-        error = self.ipython_step_library.run(
-            command, swallow_exception=True
-        ).error
-        assert exception.strip() in error
-        self.doc.step("exception", command=command, exception=exception)
 
     def on_failure(self, result):
         if self.settings.get("pause_on_failure", True):
             if self.preconditions.get("launch_shell", False):
                 self.services.log(message=self.stacktrace.to_template())
 
-    def file_contents_will_be(self, filename, contents):
-        assert self.path.state.joinpath(filename).bytes().decode('utf8').strip() == contents.strip()
-        self.doc.step("filename contains", filename=filename, contents=contents)
-
     def pause(self, message="Pause"):
         import IPython
         IPython.embed()
-
-    def output_is(self, expected_contents):
-        output_contents = self.path.state.joinpath("output.txt").bytes().decode('utf8').strip()
-        regex = DefaultSimex(
-            open_delimeter="(((",
-            close_delimeter=")))",
-            exact=True,
-        ).compile(expected_contents.strip())
-        if regex.match(output_contents) is None:
-            raise RuntimeError("Expected output:\n{0}\n\nActual output:\n{1}".format(
-                expected_contents,
-                output_contents,
-            ))
-        self.path.state.joinpath("output.txt").remove()
-
-    def output_contains(self, expected_contents):
-        output_contents = self.path.state.joinpath("output.txt").bytes().decode('utf8').strip()
-        regex = DefaultSimex(
-            open_delimeter="(((",
-            close_delimeter=")))",
-        ).compile(expected_contents.strip())
-        if regex.search(output_contents) is None:
-            raise RuntimeError("Expected to find:\n{0}\n\nActual output:\n{1}".format(
-                expected_contents,
-                output_contents,
-            ))
-        self.path.state.joinpath("output.txt").remove()
-
-    @validate(changeable=Seq(Str()))
-    def output_will_be(self, reference, changeable=None):
-        output_contents = self.path.state.joinpath("output.txt").bytes().decode('utf8').strip()
-
-        artefact = self.path.key.joinpath(
-            "artefacts", "{0}.txt".format(reference.replace(" ", "-").lower())
-        )
-
-        simex = DefaultSimex(
-            open_delimeter="(((",
-            close_delimeter=")))",
-        )
-
-        simex_contents = output_contents
-
-        if changeable is not None:
-            for replacement in changeable:
-                simex_contents = simex.compile(replacement).sub(replacement, simex_contents)
-
-        if not artefact.exists():
-            artefact.write_text(simex_contents)
-        else:
-            if self.settings.get('overwrite artefacts'):
-                artefact.write_text(simex_contents)
-                self.services.log(output_contents)
-            else:
-                if simex.compile(artefact.bytes().decode('utf8')).match(output_contents) is None:
-                    raise RuntimeError("Expected to find:\n{0}\n\nActual output:\n{1}".format(
-                        artefact.bytes().decode('utf8'),
-                        output_contents,
-                    ))
-                else:
-                    self.services.log(output_contents)
-
-    def splines_reticulated(self):
-        assert self.path.state.joinpath("splines_reticulated.txt").exists()
-        self.path.state.joinpath("splines_reticulated.txt").remove()
-
-    def llamas_ass_kicked(self):
-        assert self.path.state.joinpath("kicked_llamas_ass.txt").exists()
-        self.path.state.joinpath("kicked_llamas_ass.txt").remove()
-
-    def file_was_created_with(self, filename="", contents=""):
-        if not self.path.state.joinpath(filename).exists():
-            raise RuntimeError("{0} does not exist".format(filename))
-        if self.path.state.joinpath(filename).bytes().decode('utf8') != contents:
-            raise RuntimeError("{0} did not contain {0}".format(filename, contents))
-
-    def exception_raised(self, command, reference, changeable=None):
-        result = self.ipython_step_library.run(command, swallow_exception=True).error
-        assert result is not None
-        self.path.state.joinpath("output.txt").write_text(result)
-        self.output_will_be(reference, changeable)
-
-    def tear_down(self):
-        try:
-            self.shutdown_connection()
-        except:
-            pass
-        if hasattr(self, 'services'):
-            self.services.shutdown()
 
 
 @expected(exceptions.HitchStoryException)
