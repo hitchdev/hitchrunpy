@@ -1,20 +1,15 @@
-from subprocess import call
-from os import path
 from commandlib import run, Command
 import hitchpython
-import hitchserve
-from hitchstory import StoryCollection, StorySchema, BaseEngine, exceptions, validate
+from hitchstory import StoryCollection, StorySchema, BaseEngine, exceptions
 from hitchrun import expected
-import strictyaml
-from strictyaml import MapPattern, Str, Seq, Map, Optional
+from strictyaml import Str, Map, Optional
 from pathquery import pathq
 import hitchtest
 import hitchdoc
-from simex import DefaultSimex
 from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
-from hitchrunpy import ExamplePythonCode, exceptions as hitchrunpyexceptions
+from hitchrunpy import ExamplePythonCode
 
 
 class Engine(BaseEngine):
@@ -44,11 +39,11 @@ class Engine(BaseEngine):
         if self.path.state.exists():
             self.path.state.rmtree(ignore_errors=True)
         self.path.state.mkdir()
-        
+
         if self.path.working_dir.exists():
             self.path.working_dir.rmtree(ignore_errors=True)
         self.path.working_dir.mkdir()
-        
+
         self.python_package = hitchpython.PythonPackage(
             self.preconditions.get('python_version', '3.5.0')
         )
@@ -67,24 +62,23 @@ class Engine(BaseEngine):
             if changed:
                 self.pip("uninstall", "hitchrunpy", "-y").ignore_errors().run()
                 self.pip("install", ".").in_dir(self.path.project).run()
-        
+
         self.example_python_code = ExamplePythonCode(
             self.preconditions.get('code', '')
         ).with_setup_code(
             self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
         )
-    
+
     def run_code(self):\
         self.example_python_code.run(self.path.state, self.python)
-    
-    
+
     def raises_exception(self, message=None, exception_type=None):
         self.example_python_code.expect_exception(exception_type, message.strip())\
                                 .run(self.path.state, self.python)
 
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
-  
+
     def on_failure(self, result):
         if self.settings.get("pause_on_failure", True):
             if self.preconditions.get("launch_shell", False):
@@ -140,11 +134,11 @@ def lint():
         "--max-line-length=100",
         "--exclude=__init__.py",
     ).run()
-    #python("-m", "flake8")(
-        #DIR.key.joinpath("key.py"),
-        #"--max-line-length=100",
-        #"--exclude=__init__.py",
-    #).run()
+    python("-m", "flake8")(
+        DIR.key.joinpath("key.py"),
+        "--max-line-length=100",
+        "--exclude=__init__.py",
+    ).run()
     print("Lint success!")
 
 
