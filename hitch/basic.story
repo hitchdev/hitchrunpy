@@ -1,11 +1,7 @@
 Run code:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode((
           'with open("examplefile", "w") as handle:'
           '     handle.write("exampletext")'
@@ -18,14 +14,10 @@ Run code:
 
         
 Run code with long strings:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
       long_string = "a long string"
-      
-      working_dir = '{{ working_dir }}'
       
       ExamplePythonCode((
           'with open("examplefile", "w") as handle:'
@@ -39,13 +31,9 @@ Run code with long strings:
 
 
 Error running code:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode('''x =''').run(working_dir, python)
   scenario:
     - Raises exception:
@@ -62,13 +50,9 @@ Error running code:
 
 
 Unexpected exception:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode("""
 
       raise Exception('This should not happen')
@@ -83,13 +67,9 @@ Unexpected exception:
 
 
 Setup code:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode((
           'with open("examplefile", "w") as handle:'
           '     handle.write(exampletext)'

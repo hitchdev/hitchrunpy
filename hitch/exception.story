@@ -1,11 +1,7 @@
 Exception occurs as expected:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode("""
       
       class CustomException(Exception):
@@ -19,13 +15,9 @@ Exception occurs as expected:
 
 
 Expected exception was different:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode("""
       
       class AnotherCustomException(Exception):
@@ -43,13 +35,9 @@ Expected exception was different:
 
 
 Expect exception with no details:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode("""
       
       raise Exception()
@@ -60,13 +48,9 @@ Expect exception with no details:
 
 
 Expected exception but no exception occurred:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode("""
       
       pass
@@ -80,13 +64,9 @@ Expected exception but no exception occurred:
 
 
 Expected exception has different message:
+  based on: hitchrunpy
   preconditions:
-    code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
+    code: |      
       ExamplePythonCode("""
       
       class CustomException(Exception):

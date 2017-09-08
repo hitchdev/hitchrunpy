@@ -22,11 +22,9 @@ class Engine(BaseEngine):
 
     schema = StorySchema(
         preconditions=Map({
+            Optional("setup"): Str(),
             "code": Str(),
         }),
-        about={
-            "tags": Seq(Str()),
-        },
     )
 
     def __init__(self, paths, settings):
@@ -72,8 +70,8 @@ class Engine(BaseEngine):
     
     def run_code(self):
         ExamplePythonCode(
-            self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
-        ).with_setup_code(self.preconditions.get('setup', ''))\
+            self.preconditions['code']
+        ).with_setup_code(self.preconditions.get('setup').replace("{{ working_dir }}", self.path.working_dir))\
          .run(self.path.state, self.python)
     
     def file_contains(self, filename, contents):
@@ -82,7 +80,7 @@ class Engine(BaseEngine):
     def raises_exception(self, message=None, exception_type=None):
         ExamplePythonCode(
             self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
-        ).with_setup_code(self.preconditions.get('setup', ''))\
+        ).with_setup_code(self.preconditions.get('setup').replace("{{ working_dir }}", self.path.working_dir))\
           .expect_exception(exception_type, message.strip())\
           .run(self.path.state, self.python)
 

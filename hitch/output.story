@@ -1,23 +1,15 @@
 Print message appears:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode('''print("hello")''').expect_output('hello').run(working_dir, python)
   scenario:
     - Run code
 
 Print message appears differently:
+  based on: hitchrunpy
   preconditions:
     code: |
-      from hitchrunpy import ExamplePythonCode
-      from commandlib import python
-      
-      working_dir = '{{ working_dir }}'
-      
       ExamplePythonCode('''print("goodbye")''').expect_output('hello').run(working_dir, python)
   scenario:
     - Raises Exception:
