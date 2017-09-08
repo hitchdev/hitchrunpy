@@ -54,6 +54,7 @@ simplegeneric==0.8.1      # via ipython
 six==1.10.0               # via hitch-pip-tools, python-dateutil, traitlets
 strictyaml==0.7.0         # via hitchdoc, hitchstory
 tblib==1.3.2              # via hitchserve
+templex==0.1.0
 tqdm==4.14.0              # via twine
 traitlets==4.3.2          # via ipython, jupyter-client, jupyter-core
 twine==1.9.1
