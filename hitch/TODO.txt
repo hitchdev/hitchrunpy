@@ -1,2 +1,4 @@
+Handle non-ascii characters in exceptions.
+Run many different versions of python.
 Error in __repr__ in is_equal.
 Use icommandlib and handle events via it.
