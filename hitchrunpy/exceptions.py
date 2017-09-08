@@ -37,6 +37,19 @@ class ExpectedExceptionMessageWasDifferent(HitchRunPyException):
         ))
 
 
+class ExceptionDoesNotMatchFunction(HitchRunPyException):
+    """Matching function did not return True."""
+    def __init__(self, exception_type, message):
+        self.exception_type = exception_type
+        self.message = message
+        super(ExceptionDoesNotMatchFunction, self).__init__((
+            u"Exception '{0}' did not match function supplied. Message:\n{1}"
+        ).format(
+            self.exception_type,
+            self.message,
+        ))
+
+
 class ExpectedExceptionButNoExceptionOccurred(HitchRunPyException):
     pass
 

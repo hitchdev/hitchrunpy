@@ -11,6 +11,12 @@ import json
 HITCHRUNPY_TEMPLATE_DIR = Path(__file__).dirname().abspath().joinpath("templates")
 
 
+class ExceptionRaised(object):
+    def __init__(self, exception_type, message):
+        self.exception_type = exception_type
+        self.message = message
+
+
 class ExamplePythonCode(object):
     def __init__(self, code):
         self._code = code
@@ -22,6 +28,7 @@ class ExamplePythonCode(object):
         self._exception_type = None
         self._exception_text = None
         self._expect_exception = False
+        self._exception_match_function = None
 
         self._expected_output = None
 
@@ -48,6 +55,12 @@ class ExamplePythonCode(object):
         new_expyc._exception_type = exception_type
         new_expyc._exception_text = text
         new_expyc._expect_exception = True
+        return new_expyc
+
+    def exception_matches(self, match_function):
+        new_expyc = copy(self)
+        new_expyc._expect_exception = True
+        new_expyc._exception_match_function = match_function
         return new_expyc
 
     def with_long_strings(self, **strings):
@@ -124,34 +137,46 @@ class ExamplePythonCode(object):
             error_details = json.loads(error_path.bytes().decode('utf8'))
 
             if error_details['event'] == "exception":
+                exception_raised = ExceptionRaised(
+                    error_details['exception_type'],
+                    error_details['text'],
+                )
+
                 if self._expect_exception:
                     if self._exception_type is not None:
-                        if error_details['exception_type'] != self._exception_type:
+                        if exception_raised.exception_type != self._exception_type:
                             raise exceptions.ExpectedExceptionWasDifferent((
                                 u"Expected exception '{0}', instead "
                                 u"'{1}' was raised:\n{2}"
                             ).format(
                                 self._exception_type,
-                                error_details['exception_type'],
-                                error_details['text'],
+                                exception_raised.exception_type,
+                                exception_raised.message,
                             ))
 
                     if self._exception_text is not None:
-                        if error_details['text'] != self._exception_text:
+                        if exception_raised.message != self._exception_text:
                             raise exceptions.ExpectedExceptionMessageWasDifferent(
                                 self._exception_type,
-                                error_details['text'],
+                                exception_raised.message,
                                 self._exception_text,
                                 ''.join(difflib.ndiff(
-                                    error_details['text'].splitlines(1),
+                                    exception_raised.message.splitlines(1),
                                     self._exception_text.splitlines(1)
                                 )),
+                            )
+
+                    if self._exception_match_function is not None:
+                        if not self._exception_match_function(exception_raised):
+                            raise exceptions.ExceptionDoesNotMatchFunction(
+                                exception_raised.exception_type,
+                                exception_raised.message,
                             )
                 else:
                     raise exceptions.UnexpectedException(
                         "Unexpected exception '{0}' raised. Message:\n{1}".format(
-                            error_details['exception_type'],
-                            error_details['text'],
+                            exception_raised.exception_type,
+                            exception_raised.message,
                         )
                     )
             elif error_details['event'] == "notequal":

@@ -13,6 +13,49 @@ Exception occurs as expected:
   scenario:
     - Run code
 
+Exception matches lambda:
+  based on: hitchrunpy
+  preconditions:
+    code: |
+      ExamplePythonCode("""
+      
+      class CustomException(Exception):
+          pass
+
+      raise CustomException('This should happen')
+      
+      """).exception_matches(
+          lambda exception: exception.exception_type == "__main__.CustomException" and\
+                            exception.message == "This should happen"
+      )\
+          .run(working_dir, python)
+  scenario:
+    - Run code
+
+Exception does not match lambda:
+  based on: hitchrunpy
+  preconditions:
+    code: |
+      ExamplePythonCode("""
+      
+      class CustomException(Exception):
+          pass
+
+      raise CustomException('This should happen')
+      
+      """).exception_matches(
+          lambda exception: exception.exception_type == "__main__.CustomException" and\
+                            exception.message == "Message is different"
+      )\
+          .run(working_dir, python)
+  scenario:
+    - Raises Exception:
+        exception type: hitchrunpy.exceptions.ExceptionDoesNotMatchFunction
+        message: |
+          Exception '__main__.CustomException' did not match function supplied. Message:
+          This should happen
+
+
 
 Expected exception was different:
   based on: hitchrunpy
