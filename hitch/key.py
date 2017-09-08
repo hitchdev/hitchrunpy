@@ -67,23 +67,24 @@ class Engine(BaseEngine):
             if changed:
                 self.pip("uninstall", "hitchrunpy", "-y").ignore_errors().run()
                 self.pip("install", ".").in_dir(self.path.project).run()
+        
+        self.example_python_code = ExamplePythonCode(
+            self.preconditions.get('code', '')
+        ).with_setup_code(
+            self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
+        )
     
-    def run_code(self):
-        ExamplePythonCode(
-            self.preconditions['code']
-        ).with_setup_code(self.preconditions.get('setup').replace("{{ working_dir }}", self.path.working_dir))\
-         .run(self.path.state, self.python)
+    def run_code(self):\
+        self.example_python_code.run(self.path.state, self.python)
     
-    def file_contains(self, filename, contents):
-        assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
     
     def raises_exception(self, message=None, exception_type=None):
-        ExamplePythonCode(
-            self.preconditions['code'].replace("{{ working_dir }}", self.path.working_dir)
-        ).with_setup_code(self.preconditions.get('setup').replace("{{ working_dir }}", self.path.working_dir))\
-          .expect_exception(exception_type, message.strip())\
-          .run(self.path.state, self.python)
+        self.example_python_code.expect_exception(exception_type, message.strip())\
+                                .run(self.path.state, self.python)
 
+    def file_contains(self, filename, contents):
+        assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
+  
     def on_failure(self, result):
         if self.settings.get("pause_on_failure", True):
             if self.preconditions.get("launch_shell", False):
