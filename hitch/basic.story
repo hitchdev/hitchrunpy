@@ -17,7 +17,7 @@ Run code with long strings:
   based on: hitchrunpy
   preconditions:
     code: |
-      long_string = "a long string"
+      long_string = u"â long string"
       
       ExamplePythonCode((
           'with open("examplefile", "w") as handle:'
@@ -27,7 +27,7 @@ Run code with long strings:
     - Run code
     - File contains:
         filename: examplefile
-        contents: a long string
+        contents: â long string
 
 
 Error running code:

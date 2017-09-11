@@ -16,7 +16,7 @@ def not_equal(lhs, rhs):
 
 {% if long_strings %}
 {% for name, value in long_strings.items() %}
-{{ name }} = """{{ value }}"""
+{{ name }} = u"""{{ value }}"""
 {% endfor %}
 {% endif %}
 
