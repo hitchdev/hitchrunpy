@@ -69,12 +69,12 @@ class Engine(BaseEngine):
             self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
         )
 
-    def run_code(self):\
+    def run_code(self):
         self.example_python_code.run(self.path.state, self.python)
 
     def raises_exception(self, message=None, exception_type=None):
-        self.example_python_code.expect_exception(exception_type, message.strip())\
-                                .run(self.path.state, self.python)
+        result = self.example_python_code.expect_exceptions().run(self.path.state, self.python)
+        result.exception_was_raised(exception_type, message.strip())
 
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents

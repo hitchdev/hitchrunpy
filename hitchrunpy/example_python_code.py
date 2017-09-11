@@ -17,6 +17,56 @@ class ExceptionRaised(object):
         self.message = message
 
 
+class Result(object):
+    def __init__(self, exception=None, output=None):
+        self.exception = exception
+        self.output = output
+
+    def final_output_was(self, output):
+        if output != self.output:
+            raise exceptions.OutputAppearsDifferent((
+                'EXPECTED:\n'
+                '{0}\n'
+                '\n'
+                'ACTUAL:\n'
+                '{1}'
+            ).format(
+                output,
+                self.output,
+            ))
+
+    def exception_was_raised(self, exception_type=None, text=None):
+        if self.exception is None:
+            raise exceptions.ExpectedExceptionButNoExceptionOccurred(
+                "Expected exception '{0}', but no exception occurred.".format(
+                    exception_type,
+                )
+            )
+
+        if exception_type is not None:
+            if self.exception.exception_type != exception_type:
+                raise exceptions.ExpectedExceptionWasDifferent((
+                    u"Expected exception '{0}', instead "
+                    u"'{1}' was raised:\n{2}"
+                ).format(
+                    exception_type,
+                    self.exception.exception_type,
+                    self.exception.message,
+                ))
+
+        if text is not None:
+            if self.exception.message != text:
+                raise exceptions.ExpectedExceptionMessageWasDifferent(
+                    exception_type,
+                    self.exception.message,
+                    text,
+                    ''.join(difflib.ndiff(
+                        self.exception.message.splitlines(1),
+                        text.splitlines(1)
+                    )),
+                )
+
+
 class ExamplePythonCode(object):
     def __init__(self, code):
         self._code = code
@@ -29,6 +79,7 @@ class ExamplePythonCode(object):
         self._exception_text = None
         self._expect_exception = False
         self._exception_match_function = None
+        self._expect_exceptions = False
 
         self._expected_output = None
 
@@ -56,6 +107,11 @@ class ExamplePythonCode(object):
         new_expyc._exception_text = text
         new_expyc._exception_match_function = match_function
         new_expyc._expect_exception = True
+        return new_expyc
+
+    def expect_exceptions(self):
+        new_expyc = copy(self)
+        new_expyc._expect_exceptions = True
         return new_expyc
 
     def with_long_strings(self, **strings):
@@ -115,18 +171,7 @@ class ExamplePythonCode(object):
                 "Error running code. Output:\n\n{0}".format(error_message)
             )
 
-        if self._expected_output is not None:
-            if self._expected_output != command_output:
-                raise exceptions.OutputAppearsDifferent((
-                    'EXPECTED:\n'
-                    '{0}\n'
-                    '\n'
-                    'ACTUAL:\n'
-                    '{1}'
-                ).format(
-                    self._expected_output,
-                    command_output,
-                ))
+        exception_raised = None
 
         if error_path.exists():
             error_details = json.loads(error_path.bytes().decode('utf8'))
@@ -136,44 +181,6 @@ class ExamplePythonCode(object):
                     error_details['exception_type'],
                     error_details['text'],
                 )
-
-                if self._expect_exception:
-                    if self._exception_type is not None:
-                        if exception_raised.exception_type != self._exception_type:
-                            raise exceptions.ExpectedExceptionWasDifferent((
-                                u"Expected exception '{0}', instead "
-                                u"'{1}' was raised:\n{2}"
-                            ).format(
-                                self._exception_type,
-                                exception_raised.exception_type,
-                                exception_raised.message,
-                            ))
-
-                    if self._exception_text is not None:
-                        if exception_raised.message != self._exception_text:
-                            raise exceptions.ExpectedExceptionMessageWasDifferent(
-                                self._exception_type,
-                                exception_raised.message,
-                                self._exception_text,
-                                ''.join(difflib.ndiff(
-                                    exception_raised.message.splitlines(1),
-                                    self._exception_text.splitlines(1)
-                                )),
-                            )
-
-                    if self._exception_match_function is not None:
-                        if not self._exception_match_function(exception_raised):
-                            raise exceptions.ExceptionDoesNotMatchFunction(
-                                exception_raised.exception_type,
-                                exception_raised.message,
-                            )
-                else:
-                    raise exceptions.UnexpectedException(
-                        "Unexpected exception '{0}' raised. Message:\n{1}".format(
-                            exception_raised.exception_type,
-                            exception_raised.message,
-                        )
-                    )
             elif error_details['event'] == "notequal":
                 raise exceptions.NotEqual((
                   u"'{0}' is not equal to '{1}'.\n"
@@ -199,10 +206,13 @@ class ExamplePythonCode(object):
                 raise TypeError(
                     "Invalid error event type {0} reported.".format(error_details['event'])
                 )
-        else:
-            if self._expect_exception:
-                raise exceptions.ExpectedExceptionButNoExceptionOccurred(
-                    "Expected exception '{0}', but no exception occurred.".format(
-                        self._exception_type,
+
+            if not self._expect_exceptions:
+                raise exceptions.UnexpectedException(
+                    "Unexpected exception '{0}' raised. Message:\n{1}".format(
+                        exception_raised.exception_type,
+                        exception_raised.message,
                     )
                 )
+
+        return Result(exception=exception_raised, output=command_output)
