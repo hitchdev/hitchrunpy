@@ -79,11 +79,6 @@ class Engine(BaseEngine):
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
 
-    def on_failure(self, result):
-        if self.settings.get("pause_on_failure", True):
-            if self.preconditions.get("launch_shell", False):
-                self.services.log(message=self.stacktrace.to_template())
-
     def pause(self, message="Pause"):
         import IPython
         IPython.embed()
