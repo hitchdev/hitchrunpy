@@ -9,7 +9,7 @@ import hitchdoc
 from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
-from hitchrunpy import ExamplePythonCode
+from hitchrunpy import ExamplePythonCode, ExpectedExceptionMessageWasDifferent
 
 
 class Engine(BaseEngine):
@@ -73,8 +73,14 @@ class Engine(BaseEngine):
         self.example_python_code.run(self.path.state, self.python)
 
     def raises_exception(self, message=None, exception_type=None):
-        result = self.example_python_code.expect_exceptions().run(self.path.state, self.python)
-        result.exception_was_raised(exception_type, message.strip())
+        try:
+            result = self.example_python_code.expect_exceptions().run(self.path.state, self.python)
+            result.exception_was_raised(exception_type, message.strip())
+        except ExpectedExceptionMessageWasDifferent as error:
+            if self.settings.get("rewrite"):
+                self.current_step.update(message=error.actual_message)
+            else:
+                raise
 
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
@@ -91,7 +97,7 @@ def tdd(*words):
     """
     print(
         StoryCollection(
-            pathq(DIR.key).ext("story"), Engine(DIR, {"overwrite artefacts": True})
+            pathq(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
         ).shortcut(*words).play().report()
     )
 
@@ -103,7 +109,7 @@ def testfile(filename):
     """
     print(
         StoryCollection(
-            pathq(DIR.key).ext("story"), Engine(DIR, {"overwrite artefacts": True})
+            pathq(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
         ).in_filename(filename).ordered_by_name().play().report()
     )
 
