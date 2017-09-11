@@ -1,0 +1,4 @@
+* Return result object after run_on_completion.
+* Instead of != for equal, use == to be consistent.
+* Return a result object.
+* icommandlib
