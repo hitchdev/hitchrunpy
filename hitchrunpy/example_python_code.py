@@ -1,6 +1,7 @@
 from jinja2 import FileSystemLoader, environment
 from commandlib import Command
 from commandlib import exceptions as command_exception
+from prettystack import PrettyStackTemplate
 from hitchrunpy import exceptions
 from path import Path
 from copy import copy
@@ -12,9 +13,14 @@ HITCHRUNPY_TEMPLATE_DIR = Path(__file__).dirname().abspath().joinpath("templates
 
 
 class ExceptionRaised(object):
-    def __init__(self, exception_type, message):
-        self.exception_type = exception_type
-        self.message = message
+    def __init__(self, error_details):
+        self._error_details = error_details
+        self.exception_type = error_details['exception_type']
+        self.message = error_details['exception_string']
+
+    @property
+    def formatted_stacktrace(self):
+        return PrettyStackTemplate().to_console().from_stacktrace_data(self._error_details)
 
 
 class Result(object):
@@ -177,10 +183,8 @@ class ExamplePythonCode(object):
             error_details = json.loads(error_path.bytes().decode('utf8'))
 
             if error_details['event'] == "exception":
-                exception_raised = ExceptionRaised(
-                    error_details['exception_type'],
-                    error_details['text'],
-                )
+                exception_raised = ExceptionRaised(error_details)
+
             elif error_details['event'] == "notequal":
                 raise exceptions.NotEqual((
                   u"'{0}' is not equal to '{1}'.\n"
@@ -209,10 +213,9 @@ class ExamplePythonCode(object):
 
             if not self._expect_exceptions:
                 raise exceptions.UnexpectedException(
-                    "Unexpected exception '{0}' raised. Message:\n{1}".format(
-                        exception_raised.exception_type,
-                        exception_raised.message,
-                    )
+                    exception_raised.exception_type,
+                    exception_raised.message,
+                    exception_raised.formatted_stacktrace,
                 )
 
         return Result(exception=exception_raised, output=command_output)

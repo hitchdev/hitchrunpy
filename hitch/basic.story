@@ -7,27 +7,27 @@ Run code:
           '     handle.write("exampletext")'
       )).run(working_dir, python)
   scenario:
-    - Run code
-    - File contains:
-        filename: examplefile
-        contents: exampletext
+  - Run code
+  - File contains:
+      filename: examplefile
+      contents: exampletext
 
-        
+
 Run code with long strings:
   based on: hitchrunpy
   preconditions:
     code: |
       long_string = u"â long string"
-      
+
       ExamplePythonCode((
           'with open("examplefile", "w") as handle:'
           '     handle.write(long_string)'
       )).with_long_strings(long_string=long_string).run(working_dir, python)
   scenario:
-    - Run code
-    - File contains:
-        filename: examplefile
-        contents: â long string
+  - Run code
+  - File contains:
+      filename: examplefile
+      contents: â long string
 
 
 Error running code:
@@ -36,18 +36,15 @@ Error running code:
     code: |
       ExamplePythonCode('''x =''').run(working_dir, python)
   scenario:
-    - Raises exception:
-        exception type: hitchrunpy.exceptions.ErrorRunningCode
-        message: |
-          Error running code. Output:
+  - Raises exception:
+      exception type: hitchrunpy.exceptions.ErrorRunningCode
+      message: |
+        Error running code. Output:
 
-            File "example_python_code.py", line 23
-              x =
-                ^
-          SyntaxError: invalid syntax
-          
-
-
+          File "example_python_code.py", line 60
+            x =
+              ^
+        SyntaxError: invalid syntax
 
 Unexpected exception:
   based on: hitchrunpy
@@ -56,14 +53,14 @@ Unexpected exception:
       ExamplePythonCode("""
 
       raise Exception('This should not happen')
-      
+
       """).run(working_dir, python)
   scenario:
-    - Raises exception:
-        exception type: hitchrunpy.exceptions.UnexpectedException
-        message: |
-          Unexpected exception 'builtins.Exception' raised. Message:
-          This should not happen
+  - Raises exception:
+      exception type: hitchrunpy.exceptions.UnexpectedException
+      message: |
+        Unexpected exception 'builtins.Exception' raised. Message:
+        This should not happen
 
 
 Setup code:
@@ -76,7 +73,7 @@ Setup code:
       )).with_setup_code("exampletext = 'exampletext'")\
           .run(working_dir, python)
   scenario:
-    - Run code
-    - File contains:
-        filename: examplefile
-        contents: exampletext
+  - Run code
+  - File contains:
+      filename: examplefile
+      contents: exampletext

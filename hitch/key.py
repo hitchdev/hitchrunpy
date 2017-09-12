@@ -10,6 +10,7 @@ from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, ExpectedExceptionMessageWasDifferent
+import kaching
 
 
 class Engine(BaseEngine):
@@ -18,7 +19,7 @@ class Engine(BaseEngine):
     schema = StorySchema(
         preconditions=Map({
             Optional("setup"): Str(),
-            "code": Str(),
+            Optional("code"): Str(),
         }),
     )
 
@@ -89,6 +90,10 @@ class Engine(BaseEngine):
         import IPython
         IPython.embed()
 
+    def on_success(self):
+        if self.settings.get("rewrite"):
+            self.new_story.save()
+
 
 @expected(exceptions.HitchStoryException)
 def tdd(*words):
@@ -122,6 +127,20 @@ def regression():
     print(
         StoryCollection(
             pathq(DIR.key).ext("story"), Engine(DIR, {})
+        ).ordered_by_name().play().report()
+    )
+    kaching.win()
+    import time
+    time.sleep(1)
+
+
+def rewriteall():
+    """
+    Run regression tests with story rewriting on.
+    """
+    print(
+        StoryCollection(
+            pathq(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
         ).ordered_by_name().play().report()
     )
 

@@ -4,6 +4,43 @@ import sys
 if sys.version_info[0] == 3:
     unicode = str
 
+def _save_exception():
+    import json
+
+    tb_id = 0
+    _, exception, tb = sys.exc_info()
+    
+    if exception is None:
+        return None
+
+    # Create list of tracebacks
+    tracebacks = []
+    while tb is not None:
+        filename = tb.tb_frame.f_code.co_filename
+        if filename == '<frozen importlib._bootstrap>':
+            break
+
+        tracebacks.append({
+            "tb_id": tb_id,
+            "filename": tb.tb_frame.f_code.co_filename,
+            "line": tb.tb_lineno,
+            "function": tb.tb_frame.f_code.co_name,
+        })
+        
+        tb_id = tb_id + 1
+        tb = tb.tb_next
+    
+    with open("{{ error_path }}", "w") as handle:
+        handle.write(json.dumps({
+            "tracebacks": tracebacks,
+            "exception_string": str(exception),
+            "docstring": exception.__doc__ if exception.__doc__ is not None else None,
+            "exception_type": "{}.{}".format(
+                type(exception).__module__, type(exception).__name__
+            ),
+            "event": "exception",
+        }))
+
 def not_equal(lhs, rhs):
     import json
 
@@ -26,35 +63,7 @@ try:
 
     {{ code|indent(4) }}
 except Exception as error:
-    import json
-
-    with open("{{ error_path }}", "w") as handle:
-        tb = sys.exc_info()[2]
-        # Create list of tracebacks
-        tracebacks = []
-        tb_id = 0
-        while tb is not None:
-            filename = tb.tb_frame.f_code.co_filename
-            if filename == '<frozen importlib._bootstrap>':
-                break
-
-            tracebacks.append({
-                "id": tb_id,
-                "filename": tb.tb_frame.f_code.co_filename,
-                "line": tb.tb_lineno,
-            })
-            tb_id = tb_id + 1
-            tb = tb.tb_next
-
-        handle.write(json.dumps({
-            "event": "exception",
-            "exception_type": "{}.{}".format(
-                type(error).__module__, type(error).__name__
-            ),
-            "text": unicode(error),
-            "tracebacks": tracebacks,
-        }))
-    
+    _save_exception()
     sys.exit(0)
 {% endif %}
 

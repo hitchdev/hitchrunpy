@@ -3,7 +3,19 @@ class HitchRunPyException(Exception):
 
 
 class UnexpectedException(HitchRunPyException):
-    pass
+    """
+    The correct exception was raised, but its message was not as expected.
+    """
+    def __init__(self, exception_type, message, formatted_stacktrace):
+        self.exception_type = exception_type
+        self.message = message
+        self.formatted_stacktrace = formatted_stacktrace
+        super(HitchRunPyException, self).__init__((
+            u"Unexpected exception '{0}' raised. Message:\n{1}"
+        ).format(
+            self.exception_type,
+            self.message,
+        ))
 
 
 class ExpectedExceptionWasDifferent(HitchRunPyException):
