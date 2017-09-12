@@ -52,7 +52,7 @@ Unexpected exception:
     code: |
       ExamplePythonCode("""
 
-      raise Exception('This should not happen')
+      raise Exception('This should not hâppen')
 
       """).run(working_dir, python)
   scenario:
@@ -61,9 +61,9 @@ Unexpected exception:
       message: "Unexpected exception 'builtins.Exception' raised. Stacktrace:\n\n\
         [0]: function '\e[1m<module>\e[0m'\n  /home/colm/.hitch/mdkgjt/working/examplepythoncode.py\n\
         \n    \n        59 :     \n        60 :         \n    --> \e[1m61\e[0m : \
-        \        raise Exception('This should not happen')\n        62 :         \n\
+        \        raise Exception('This should not hâppen')\n        62 :         \n\
         \    \n    \n\n\e[31m\e[1mbuiltins.Exception\e[0m\n  \e[2m\e[31mCommon base\
-        \ class for all non-exit exceptions.\e[0m\n\e[31mThis should not happen\e\
+        \ class for all non-exit exceptions.\e[0m\n\e[31mThis should not hâppen\e\
         [39m"
 
 Setup code:

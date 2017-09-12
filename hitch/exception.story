@@ -7,11 +7,11 @@ Exception occurs as expected:
       class CustomException(Exception):
           pass
 
-      raise CustomException('This should happen')
+      raise CustomException('This should hâppen')
 
       """).expect_exceptions().run(working_dir, python)
 
-      result.exception_was_raised("__main__.CustomException", "This should happen")
+      result.exception_was_raised("__main__.CustomException", "This should hâppen")
   scenario:
   - Run code
 
@@ -69,11 +69,11 @@ Expected exception was different:
 
       """).expect_exceptions().run(working_dir, python)
 
-      result.exception_was_raised("__main__.CustomException", "This should happen")
+      result.exception_was_raised("__main__.CustomException", "This should hâppen")
   scenario:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
-      message: |
+      message: |-
         Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
         This should happen
 
@@ -84,7 +84,7 @@ Expect exception with no details:
     code: |
       result = ExamplePythonCode("""
 
-      raise Exception()
+      raise Exception("ân exception")
 
       """).expect_exceptions().run(working_dir, python)
 
@@ -103,7 +103,7 @@ Expected exception but no exception occurred:
 
       """).expect_exceptions().run(working_dir, python)
 
-      result.exception_was_raised("__main__.CustomException", "This should happen")
+      result.exception_was_raised("__main__.CustomException", "This should hâppen")
   scenario:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.ExpectedExceptionButNoExceptionOccurred
@@ -120,30 +120,30 @@ Expected exception has different message:
       class CustomException(Exception):
           pass
 
-      raise CustomException('This was not\\nthe expected message.')
+      raise CustomException('This was not\\nthe expected messâge.')
 
       """).expect_exceptions().run(working_dir, python)
 
-      result.exception_was_raised("__main__.CustomException", 'This was\nthe expected message')
+      result.exception_was_raised("__main__.CustomException", 'This was\nthe expected messâge')
   scenario:
   - Raises Exception:
       exception_type: hitchrunpy.exceptions.ExpectedExceptionMessageWasDifferent
-      message: |
+      message: |-
         Expected exception '__main__.CustomException' was raised, but message was different.
 
         ACTUAL:
         This was not
-        the expected message.
+        the expected messâge.
 
         EXPECTED:
         This was
-        the expected message
+        the expected messâge
         DIFF:
         - This was not
         ?         ----
         + This was
-        - the expected message.?                     -
-        + the expected message
+        - the expected messâge.?                     -
+        + the expected messâge
 
 
 
