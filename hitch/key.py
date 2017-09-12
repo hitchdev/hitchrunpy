@@ -10,7 +10,6 @@ from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, ExpectedExceptionMessageWasDifferent
-import kaching
 
 
 class Engine(BaseEngine):
@@ -124,14 +123,10 @@ def regression():
     Regression test - run all tests and linter.
     """
     lint()
-    print(
-        StoryCollection(
-            pathq(DIR.key).ext("story"), Engine(DIR, {})
-        ).ordered_by_name().play().report()
-    )
-    kaching.win()
-    import time
-    time.sleep(1)
+    results = StoryCollection(
+        pathq(DIR.key).ext("story"), Engine(DIR, {})
+    ).ordered_by_name().play()
+    print(results.report())
 
 
 def rewriteall():

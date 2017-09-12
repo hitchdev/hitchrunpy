@@ -11,10 +11,10 @@ class UnexpectedException(HitchRunPyException):
         self.message = message
         self.formatted_stacktrace = formatted_stacktrace
         super(HitchRunPyException, self).__init__((
-            u"Unexpected exception '{0}' raised. Message:\n{1}"
+            u"Unexpected exception '{0}' raised. Stacktrace:\n{1}"
         ).format(
             self.exception_type,
-            self.message,
+            self.formatted_stacktrace,
         ))
 
 
