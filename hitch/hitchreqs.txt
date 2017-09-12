@@ -34,7 +34,7 @@ peewee==2.9.2             # via hitchdoc
 pexpect==4.2.1            # via ipython
 pickleshare==0.7.4        # via ipython
 pkginfo==1.4.1            # via twine
-prettystack==0.2.6        # via hitchrun, hitchstory
+prettystack==0.2.7        # via hitchrun, hitchstory
 psutil==5.2.2             # via hitchserve, hitchtest
 ptyprocess==0.5.1         # via pexpect
 pycodestyle==2.3.1        # via flake8
