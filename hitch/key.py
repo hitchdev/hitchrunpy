@@ -17,6 +17,8 @@ class Engine(BaseEngine):
 
     schema = StorySchema(
         preconditions=Map({
+            Optional("runner python version"): Str(),
+            Optional("working python version"): Str(),
             Optional("setup"): Str(),
             Optional("code"): Str(),
         }),
