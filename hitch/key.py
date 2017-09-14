@@ -92,9 +92,6 @@ class Engine(BaseEngine):
             else:
                 raise
 
-    def do_nothing(self):
-        pass
-
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
 
