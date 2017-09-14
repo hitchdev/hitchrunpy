@@ -2,3 +2,5 @@
 * Instead of != for equal, use == to be consistent.
 * Return a result object.
 * icommandlib
+* faketime
+* feed arguments to python so that sys.argv can be used.
