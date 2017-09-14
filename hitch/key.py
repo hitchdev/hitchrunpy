@@ -30,8 +30,10 @@ class Engine(BaseEngine):
 
     def set_up(self):
         """Set up your applications and the test environment."""
+        from path import Path
         self.path.state = self.path.gen.joinpath("state")
         self.path.working_dir = self.path.gen.joinpath("working")
+        self.path.share = Path("~/.hitchpkg/").expand()
 
         self.doc = hitchdoc.Recorder(
             hitchdoc.HitchStory(self),
@@ -69,6 +71,7 @@ class Engine(BaseEngine):
             self.preconditions.get('code', '')
         ).with_setup_code(
             self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
+                                           .replace("/path/to/share_dir/", self.path.share)
         )
 
     def run_code(self):

@@ -5,4 +5,4 @@ pudb
 psutil
 sure
 commandlib
-hitchpython
+hitchbuildpy

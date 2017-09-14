@@ -4,7 +4,18 @@ hitchrunpy:
     working python version: (( working python version ))
     setup: |
       from hitchrunpy import ExamplePythonCode
-      from commandlib import python
+      import hitchbuild
+      import hitchbuildpy
+
+      bundle = hitchbuild.BuildBundle(
+          hitchbuild.BuildPath(build=".", share="/path/to/share_dir/"),
+      )
+
+      bundle['python3.5.0'] = hitchbuildpy.PythonBuild("3.5.0")
+      bundle['venv3.5.0'] = hitchbuildpy.VirtualenvBuild(bundle['python3.5.0'])
+      bundle.ensure_built()
+      
+      python = bundle['python3.5.0'].bin.python
 
       working_dir = '/path/to/working_dir'
   params:
