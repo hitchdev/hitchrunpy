@@ -84,7 +84,7 @@ Expect exception with no details:
     code: |
       result = ExamplePythonCode("""
 
-      raise Exception("ân exception")
+      raise Exception(u"ân exception")
 
       """).expect_exceptions().run(working_dir, python)
 

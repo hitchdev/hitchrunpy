@@ -33,7 +33,7 @@ def _save_exception():
     with open("{{ error_path }}", "w") as handle:
         handle.write(json.dumps({
             "tracebacks": tracebacks,
-            "exception_string": str(exception),
+            "exception_string": unicode(exception),
             "docstring": exception.__doc__ if exception.__doc__ is not None else None,
             "exception_type": "{}.{}".format(
                 type(exception).__module__, type(exception).__name__

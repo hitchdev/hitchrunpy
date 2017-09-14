@@ -1,4 +1,4 @@
-Print message appears:
+Print message appears the same:
   based on: hitchrunpy
   preconditions:
     code: |

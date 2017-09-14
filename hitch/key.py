@@ -72,6 +72,7 @@ class Engine(BaseEngine):
         ).with_setup_code(
             self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
                                            .replace("/path/to/share_dir/", self.path.share)
+                                           .replace("/path/to/build_dir/", self.path.state)
                                            .replace(
                                                "{{ pyver }}",
                                                self.preconditions['working python version'],
@@ -90,6 +91,9 @@ class Engine(BaseEngine):
                 self.current_step.update(message=error.actual_message)
             else:
                 raise
+
+    def do_nothing(self):
+        pass
 
     def file_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents

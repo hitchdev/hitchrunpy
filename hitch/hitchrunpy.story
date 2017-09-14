@@ -8,14 +8,14 @@ hitchrunpy:
       import hitchbuildpy
 
       bundle = hitchbuild.BuildBundle(
-          hitchbuild.BuildPath(build=".", share="/path/to/share_dir/"),
+          hitchbuild.BuildPath(build="/path/to/build_dir/", share="/path/to/share_dir/"),
       )
 
       bundle['python{{ pyver }}'] = hitchbuildpy.PythonBuild("{{ pyver }}")
-      bundle['venv{{ pyver }'] = hitchbuildpy.VirtualenvBuild(bundle['python{{ pyver }}'])
+      bundle['venv{{ pyver }}'] = hitchbuildpy.VirtualenvBuild(bundle['python{{ pyver }}'])
       bundle.ensure_built()
       
-      python = bundle['python3.5.0'].bin.python
+      python = bundle['python{{ pyver }}'].bin.python
 
       working_dir = '/path/to/working_dir'
   params:
