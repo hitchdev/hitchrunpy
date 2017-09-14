@@ -11,8 +11,8 @@ hitchrunpy:
           hitchbuild.BuildPath(build=".", share="/path/to/share_dir/"),
       )
 
-      bundle['python3.5.0'] = hitchbuildpy.PythonBuild("3.5.0")
-      bundle['venv3.5.0'] = hitchbuildpy.VirtualenvBuild(bundle['python3.5.0'])
+      bundle['python{{ pyver }}'] = hitchbuildpy.PythonBuild("{{ pyver }}")
+      bundle['venv{{ pyver }'] = hitchbuildpy.VirtualenvBuild(bundle['python{{ pyver }}'])
       bundle.ensure_built()
       
       python = bundle['python3.5.0'].bin.python

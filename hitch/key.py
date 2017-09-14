@@ -72,6 +72,10 @@ class Engine(BaseEngine):
         ).with_setup_code(
             self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
                                            .replace("/path/to/share_dir/", self.path.share)
+                                           .replace(
+                                               "{{ pyver }}",
+                                               self.preconditions['working python version'],
+                                           )
         )
 
     def run_code(self):
