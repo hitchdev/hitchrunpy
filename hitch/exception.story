@@ -32,10 +32,12 @@ Expected exception was different:
   scenario:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
-      message: |-
-        Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
-        This should happen
-
+      message: "Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException'\
+        \ was raised:\n\n[0]: function '\e[1m<module>\e[0m'\n  /home/colm/.hitch/mdkgjt/working/examplepythoncode.py\n\
+        \n    \n        62 :             pass\n        63 :         \n    --> \e[1m64\e\
+        [0m :         raise AnotherCustomException('This should happen')\n       \
+        \ 65 :         \n    \n    \n\n\e[31m\e[1m__main__.AnotherCustomException\e\
+        [0m\n  \e[2m\e[31mNone\e[0m\n\e[31mThis should happen\e[39m"
 
 Expect exception with no details:
   based on: hitchrunpy

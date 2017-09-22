@@ -51,14 +51,11 @@ class Result(object):
 
         if exception_type is not None:
             if self.exception.exception_type != exception_type:
-                raise exceptions.ExpectedExceptionWasDifferent((
-                    u"Expected exception '{0}', instead "
-                    u"'{1}' was raised:\n{2}"
-                ).format(
+                raise exceptions.ExpectedExceptionWasDifferent(
                     exception_type,
                     self.exception.exception_type,
-                    self.exception.message,
-                ))
+                    self.exception.formatted_stacktrace,
+                )
 
         if text is not None:
             if self.exception.message != text:

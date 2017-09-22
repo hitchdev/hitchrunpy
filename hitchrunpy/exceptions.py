@@ -19,7 +19,21 @@ class UnexpectedException(HitchRunPyException):
 
 
 class ExpectedExceptionWasDifferent(HitchRunPyException):
-    pass
+    """
+    The different exception was raised to the one expected.
+    """
+    def __init__(self, expected_exception, actual_exception, formatted_stacktrace):
+        self.expected_exception = expected_exception
+        self.actual_exception = actual_exception
+        self.formatted_stacktrace = formatted_stacktrace
+        super(HitchRunPyException, self).__init__((
+            u"Expected exception '{0}', instead "
+            u"'{1}' was raised:\n{2}"
+        ).format(
+            self.expected_exception,
+            self.actual_exception,
+            self.formatted_stacktrace,
+        ))
 
 
 class ExpectedExceptionMessageWasDifferent(HitchRunPyException):
