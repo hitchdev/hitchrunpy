@@ -4,7 +4,7 @@ class HitchRunPyException(Exception):
 
 class UnexpectedException(HitchRunPyException):
     """
-    The correct exception was raised, but its message was not as expected.
+    An unexpected exception was raised.
     """
     def __init__(self, exception_type, message, formatted_stacktrace):
         self.exception_type = exception_type
