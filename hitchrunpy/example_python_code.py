@@ -71,8 +71,11 @@ class Result(object):
 
 
 class ExamplePythonCode(object):
-    def __init__(self, code):
-        self._code = code
+    def __init__(self, python_bin, working_dir):
+        self._python_bin = python_bin
+        self._working_dir = working_dir
+
+        self._code = ''
 
         self._is_equal = False
         self._lhs = None
@@ -89,6 +92,11 @@ class ExamplePythonCode(object):
         self._long_strings = None
 
         self._setup_code = u''
+
+    def with_code(self, code):
+        new_expyc = copy(self)
+        new_expyc._code = code
+        return new_expyc
 
     def with_setup_code(self, setup_code):
         new_expyc = copy(self)
@@ -127,17 +135,11 @@ class ExamplePythonCode(object):
         new_expyc._expected_output = output
         return new_expyc
 
-    def run(self, working_dir, python_bin):
+    def run(self):
         """
-        Run the defined code with python_bin in working_dir.
-
-        python_bin - can either be a python commandlib object or a
-        string referencing a python binary.
-
-        working_dir can either be a path.py object or a string
-        referencing an existing directory.
+        Run the code.
         """
-        working_dir = Path(working_dir)
+        working_dir = Path(self._working_dir)
 
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
@@ -162,7 +164,7 @@ class ExamplePythonCode(object):
                 error_path=error_path,
             ))
 
-        pycommand = Command(python_bin, "examplepythoncode.py").in_dir(working_dir)
+        pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
 
         try:
             finished_process = ICommand(pycommand).with_timeout(2.0)\

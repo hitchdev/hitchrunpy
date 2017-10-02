@@ -15,9 +15,11 @@ hitchrunpy:
       bundle['venv{{ pyver }}'] = hitchbuildpy.VirtualenvBuild(bundle['python{{ pyver }}'])
       bundle.ensure_built()
       
-      python = bundle['python{{ pyver }}'].bin.python
-
-      working_dir = '/path/to/working_dir'
+      
+      pyrunner = ExamplePythonCode(
+          bundle['python{{ pyver }}'].bin.python,
+          '/path/to/working_dir',
+      )
   default:
     runner python version: 3.5.0
     working python version: 3.5.0

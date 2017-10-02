@@ -2,10 +2,10 @@ Run code:
   based on: hitchrunpy
   preconditions:
     code: |
-      ExamplePythonCode((
+      pyrunner.with_code((
           'with open("examplefile", "w") as handle:'
           '     handle.write("exampletext")'
-      )).run(working_dir, python)
+      )).run()
   scenario:
   - Run code
   - File contains:
@@ -13,16 +13,16 @@ Run code:
       contents: exampletext
 
 
-Run code with long strings:
+Long strings:
   based on: hitchrunpy
   preconditions:
     code: |
       long_string = u"â long string"
 
-      ExamplePythonCode((
+      pyrunner.with_code((
           'with open("examplefile", "w") as handle:'
           '     handle.write(long_string)'
-      )).with_long_strings(long_string=long_string).run(working_dir, python)
+      )).with_long_strings(long_string=long_string).run()
   scenario:
   - Run code
   - File contains:
@@ -30,11 +30,11 @@ Run code with long strings:
       contents: â long string
 
 
-Error running code:
+Error occurred:
   based on: hitchrunpy
   preconditions:
     code: |
-      ExamplePythonCode('''x =''').run(working_dir, python)
+      pyrunner.with_code('''x =''').run()
   scenario:
   - Raises exception:
       exception type: hitchrunpy.exceptions.ErrorRunningCode
@@ -48,11 +48,11 @@ Unexpected exception:
   based on: hitchrunpy
   preconditions:
     code: |
-      ExamplePythonCode("""
+      pyrunner.with_code("""
 
       raise Exception('This should not hâppen')
 
-      """).run(working_dir, python)
+      """).run()
   scenario:
   - Raises exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
@@ -69,11 +69,11 @@ Setup code:
   based on: hitchrunpy
   preconditions:
     code: |
-      ExamplePythonCode((
+      pyrunner.with_code((
           'with open("examplefile", "w") as handle:'
           '     handle.write(exampletext)'
       )).with_setup_code("exampletext = 'exampletext'")\
-          .run(working_dir, python)
+        .run()
   scenario:
   - Run code
   - File contains:

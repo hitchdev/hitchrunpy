@@ -2,7 +2,7 @@ Is equal matches:
   based on: hitchrunpy
   preconditions:
     code: |
-      ExamplePythonCode("x = 5").is_equal("x", "5").run(working_dir, python)
+      pyrunner.with_code("x = 5").is_equal("x", "5").run()
   scenario:
   - Run code
 
@@ -11,8 +11,9 @@ Is equal should not run if error in setup:
   based on: hitchrunpy
   preconditions:
     code: |
-      ExamplePythonCode("x = 5").with_setup_code('raise Exception("equality test will not happen")')\
-                                .is_equal("x", "5").run(working_dir, python)
+      pyrunner.with_code("x = 5")\
+              .with_setup_code('raise Exception("equality test will not happen")')\
+              .is_equal("x", "5").run()
   scenario:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
@@ -28,10 +29,10 @@ Is equal does not match:
   based on: hitchrunpy
   preconditions:
     code: |
-      ExamplePythonCode('''
+      pyrunner.with_code('''
       x = 4
       y = 5
-      ''').is_equal("x", "y").run(working_dir, python)
+      ''').is_equal("x", "y").run()
   scenario:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.NotEqual
