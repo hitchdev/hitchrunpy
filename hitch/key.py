@@ -1,27 +1,29 @@
 from commandlib import run, Command
 import hitchpython
-from hitchstory import StoryCollection, StorySchema, BaseEngine, exceptions
+from hitchstory import StoryCollection, StorySchema, BaseEngine, exceptions, expected_exception
 from hitchrun import expected
-from strictyaml import Str, Map, Optional
+from strictyaml import Str, Optional
 from pathquery import pathq
 import hitchtest
 import hitchdoc
 from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
-from hitchrunpy import ExamplePythonCode, ExpectedExceptionMessageWasDifferent
+from hitchrunpy import ExamplePythonCode, HitchRunPyException
+from templex import Templex, NonMatching, TemplexException
+import colorama
 
 
 class Engine(BaseEngine):
     """Python engine for running tests."""
 
     schema = StorySchema(
-        preconditions=Map({
+        preconditions={
             Optional("runner python version"): Str(),
             Optional("working python version"): Str(),
             Optional("setup"): Str(),
             Optional("code"): Str(),
-        }),
+        },
     )
 
     def __init__(self, paths, settings):
@@ -82,13 +84,24 @@ class Engine(BaseEngine):
     def run_code(self):
         self.example_python_code.run(self.path.state, self.python)
 
+    @expected_exception(TemplexException)
+    @expected_exception(HitchRunPyException)
     def raises_exception(self, message=None, exception_type=None):
         try:
             result = self.example_python_code.expect_exceptions().run(self.path.state, self.python)
-            result.exception_was_raised(exception_type, message.strip())
-        except ExpectedExceptionMessageWasDifferent as error:
+            result.exception_was_raised(exception_type)
+            processed_message = result.exception.message\
+                                      .replace(self.path.state, "/path/to/code")\
+                                      .replace(self.path.share, "/path/to/share")\
+                                      .replace(colorama.Fore.RED, "[[ RED ]]")\
+                                      .replace(colorama.Style.BRIGHT, "[[ BRIGHT ]]")\
+                                      .replace(colorama.Style.DIM, "[[ DIM ]]")\
+                                      .replace(colorama.Fore.RESET, "[[ RESET FORE ]]")\
+                                      .replace(colorama.Style.RESET_ALL, "[[ RESET ALL ]]")
+            Templex(processed_message).assert_match(message)
+        except NonMatching:
             if self.settings.get("rewrite"):
-                self.current_step.update(message=error.actual_message)
+                self.current_step.update(message=processed_message)
             else:
                 raise
 

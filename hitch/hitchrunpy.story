@@ -18,6 +18,6 @@ hitchrunpy:
       python = bundle['python{{ pyver }}'].bin.python
 
       working_dir = '/path/to/working_dir'
-  params:
+  default:
     runner python version: 3.5.0
     working python version: 3.5.0

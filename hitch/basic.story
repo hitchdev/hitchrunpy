@@ -38,13 +38,11 @@ Error running code:
   scenario:
   - Raises exception:
       exception type: hitchrunpy.exceptions.ErrorRunningCode
-      message: |
-        Error running code. Output:
-
-          File "example_python_code.py", line 60
-            x =
-              ^
-        SyntaxError: invalid syntax
+      message: "Error running code. Output:\n\n  File \"examplepythoncode.py\", line\
+        \ 60                                          \n    x =                  \
+        \                                                       \n      ^        \
+        \                                                                 \nSyntaxError:\
+        \ invalid syntax"
 
 Unexpected exception:
   based on: hitchrunpy
@@ -59,12 +57,13 @@ Unexpected exception:
   - Raises exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
       message: "Unexpected exception 'builtins.Exception' raised. Stacktrace:\n\n\
-        [0]: function '\e[1m<module>\e[0m'\n  /home/colm/.hitch/mdkgjt/working/examplepythoncode.py\n\
-        \n    \n        59 :     \n        60 :         \n    --> \e[1m61\e[0m : \
-        \        raise Exception('This should not hâppen')\n        62 :         \n\
-        \    \n    \n\n\e[31m\e[1mbuiltins.Exception\e[0m\n  \e[2m\e[31mCommon base\
-        \ class for all non-exit exceptions.\e[0m\n\e[31mThis should not hâppen\e\
-        [39m"
+        [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
+        \n    \n        59 :     import hitchbuildpy\n        60 :     \n    --> [[\
+        \ BRIGHT ]]61[[ RESET ALL ]] :     bundle = hitchbuild.BuildBundle(\n    \
+        \    62 :         hitchbuild.BuildPath(build=\"/path/to/code\", share=\"/path/to/share\"\
+        ),\n    \n    \n\n[[ RED ]][[ BRIGHT ]]builtins.Exception[[ RESET ALL ]]\n\
+        \  [[ DIM ]][[ RED ]]Common base class for all non-exit exceptions.[[ RESET\
+        \ ALL ]]\n[[ RED ]]This should not hâppen[[ RESET FORE ]]"
 
 Setup code:
   based on: hitchrunpy

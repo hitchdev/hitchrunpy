@@ -1,6 +1,6 @@
 from jinja2 import FileSystemLoader, environment
 from commandlib import Command
-from commandlib import exceptions as command_exception
+from icommandlib import ICommand, ICommandError
 from prettystack import PrettyStackTemplate
 from hitchrunpy import exceptions
 from path import Path
@@ -137,7 +137,6 @@ class ExamplePythonCode(object):
         working_dir can either be a path.py object or a string
         referencing an existing directory.
         """
-        pycommand = Command(python_bin).in_dir(working_dir)
         working_dir = Path(working_dir)
 
         error_path = working_dir.joinpath("error.txt")
@@ -163,15 +162,16 @@ class ExamplePythonCode(object):
                 error_path=error_path,
             ))
 
+        pycommand = Command(python_bin, "examplepythoncode.py").in_dir(working_dir)
+
         try:
-            command_output = pycommand(example_python_code).in_dir(working_dir).output().strip()
-        except command_exception.CommandExitError as command_error:
-            error_message = command_error.stderr.replace(
-                str(working_dir.joinpath("examplepythoncode.py").abspath()),
-                "example_python_code.py"
-            ).rstrip()
+            finished_process = ICommand(pycommand).with_timeout(2.0)\
+                                                  .run()\
+                                                  .wait_for_successful_exit()
+            command_output = finished_process.screenshot.strip()
+        except ICommandError as command_error:
             raise exceptions.ErrorRunningCode(
-                "Error running code. Output:\n\n{0}".format(error_message)
+                "Error running code. Output:\n\n{0}".format(command_error.screenshot)
             )
 
         exception_raised = None

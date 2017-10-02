@@ -33,11 +33,13 @@ Expected exception was different:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
       message: "Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException'\
-        \ was raised:\n\n[0]: function '\e[1m<module>\e[0m'\n  /home/colm/.hitch/mdkgjt/working/examplepythoncode.py\n\
-        \n    \n        62 :             pass\n        63 :         \n    --> \e[1m64\e\
-        [0m :         raise AnotherCustomException('This should happen')\n       \
-        \ 65 :         \n    \n    \n\n\e[31m\e[1m__main__.AnotherCustomException\e\
-        [0m\n  \e[2m\e[31mNone\e[0m\n\e[31mThis should happen\e[39m"
+        \ was raised:\n\n[0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
+        \n    \n        62 :         hitchbuild.BuildPath(build=\"/path/to/code\"\
+        , share=\"/path/to/share\"),\n        63 :     )\n    --> [[ BRIGHT ]]64[[\
+        \ RESET ALL ]] :     \n        65 :     bundle['python3.5.0'] = hitchbuildpy.PythonBuild(\"\
+        3.5.0\")\n    \n    \n\n[[ RED ]][[ BRIGHT ]]__main__.AnotherCustomException[[\
+        \ RESET ALL ]]\n  [[ DIM ]][[ RED ]]None[[ RESET ALL ]]\n[[ RED ]]This should\
+        \ happen[[ RESET FORE ]]"
 
 Expect exception with no details:
   based on: hitchrunpy

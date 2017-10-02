@@ -17,11 +17,12 @@ Is equal should not run if error in setup:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
       message: "Unexpected exception 'builtins.Exception' raised. Stacktrace:\n\n\
-        [0]: function '\e[1m<module>\e[0m'\n  /home/colm/.hitch/mdkgjt/working/examplepythoncode.py\n\
-        \n    \n        55 : \n        56 : try:\n    --> \e[1m57\e[0m :     raise\
-        \ Exception(\"equality test will not happen\")\n        58 : \n    \n    \n\
-        \n\e[31m\e[1mbuiltins.Exception\e[0m\n  \e[2m\e[31mCommon base class for all\
-        \ non-exit exceptions.\e[0m\n\e[31mequality test will not happen\e[39m"
+        [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
+        \n    \n        55 : \n        56 : try:\n    --> [[ BRIGHT ]]57[[ RESET ALL\
+        \ ]] :     from hitchrunpy import ExamplePythonCode\n        58 :     import\
+        \ hitchbuild\n    \n    \n\n[[ RED ]][[ BRIGHT ]]builtins.Exception[[ RESET\
+        \ ALL ]]\n  [[ DIM ]][[ RED ]]Common base class for all non-exit exceptions.[[\
+        \ RESET ALL ]]\n[[ RED ]]equality test will not happen[[ RESET FORE ]]"
 
 Is equal does not match:
   based on: hitchrunpy

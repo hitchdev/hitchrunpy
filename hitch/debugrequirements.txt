@@ -6,3 +6,4 @@ psutil
 sure
 commandlib
 hitchbuildpy
+ensure
