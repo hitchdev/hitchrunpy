@@ -167,8 +167,7 @@ class ExamplePythonCode(object):
         pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
 
         try:
-            finished_process = ICommand(pycommand).with_timeout(2.0)\
-                                                  .run()\
+            finished_process = ICommand(pycommand).run()\
                                                   .wait_for_successful_exit()
             command_output = finished_process.screenshot.strip()
         except ICommandError as command_error:
