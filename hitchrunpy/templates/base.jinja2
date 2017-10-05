@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+{% if cprofile_data %}import cProfile{% endif %}
 
 if sys.version_info[0] == 3:
     unicode = str
@@ -61,7 +62,13 @@ def not_equal(lhs, rhs):
 try:
     {{ setup_code|indent(4) }}
 
+    {% if cprofile_data %}
+    cProfile.runctx("""\
+{{ code }}
+    """, locals=locals(), globals=globals(), filename="{{ cprofile_data }}")
+    {% else %}
     {{ code|indent(4) }}
+    {% endif %}
 except Exception as error:
     _save_exception()
     sys.exit(0)

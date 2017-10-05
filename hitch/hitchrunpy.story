@@ -4,8 +4,9 @@ hitchrunpy:
     working python version: (( working python version ))
     setup: |
       from hitchrunpy import ExamplePythonCode
-      import hitchbuild
+      from ensure import Ensure
       import hitchbuildpy
+      import hitchbuild
 
       bundle = hitchbuild.BuildBundle(
           hitchbuild.BuildPath(build="/path/to/build_dir/", share="/path/to/share_dir/"),

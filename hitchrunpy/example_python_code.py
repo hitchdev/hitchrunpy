@@ -75,23 +75,11 @@ class ExamplePythonCode(object):
         self._python_bin = python_bin
         self._working_dir = working_dir
 
-        self._code = ''
-
-        self._is_equal = False
-        self._lhs = None
-        self._rhs = None
-
-        self._exception_type = None
-        self._exception_text = None
-        self._expect_exception = False
-        self._exception_match_function = None
-        self._expect_exceptions = False
-
-        self._expected_output = None
-
-        self._long_strings = None
-
         self._setup_code = u''
+        self._code = u''
+        self._expect_exceptions = False
+        self._long_strings = None
+        self._cprofile_data = None
 
     def with_code(self, code):
         new_expyc = copy(self)
@@ -103,23 +91,6 @@ class ExamplePythonCode(object):
         new_expyc._setup_code = setup_code
         return new_expyc
 
-    def is_equal(self, lhs, rhs):
-        # TODO : Make this fail if expect_exception is used.
-        new_expyc = copy(self)
-        new_expyc._lhs = lhs
-        new_expyc._rhs = rhs
-        new_expyc._is_equal = True
-        return new_expyc
-
-    def expect_exception(self, exception_type=None, text=None, match_function=None):
-        # TODO : Make this fail if is_equal is used.
-        new_expyc = copy(self)
-        new_expyc._exception_type = exception_type
-        new_expyc._exception_text = text
-        new_expyc._exception_match_function = match_function
-        new_expyc._expect_exception = True
-        return new_expyc
-
     def expect_exceptions(self):
         new_expyc = copy(self)
         new_expyc._expect_exceptions = True
@@ -129,10 +100,10 @@ class ExamplePythonCode(object):
         new_expyc = copy(self)
         new_expyc._long_strings = strings
         return new_expyc
-
-    def expect_output(self, output):
+    
+    def with_cprofile(self, filename):
         new_expyc = copy(self)
-        new_expyc._expected_output = output
+        new_expyc._cprofile_data = Path(filename).abspath()
         return new_expyc
 
     def run(self):
@@ -147,22 +118,13 @@ class ExamplePythonCode(object):
         env = environment.Environment()
         env.loader = FileSystemLoader(HITCHRUNPY_TEMPLATE_DIR)
 
-        if self._is_equal:
-            example_python_code.write_text(env.get_template("is_equal.jinja2").render(
-                long_strings=self._long_strings,
-                setup_code=self._setup_code,
-                code=self._code,
-                lhs=self._lhs,
-                rhs=self._rhs,
-                error_path=error_path,
-            ))
-        else:
-            example_python_code.write_text(env.get_template("base.jinja2").render(
-                long_strings=self._long_strings,
-                setup_code=self._setup_code,
-                code=self._code,
-                error_path=error_path,
-            ))
+        example_python_code.write_text(env.get_template("base.jinja2").render(
+            long_strings=self._long_strings,
+            setup_code=self._setup_code,
+            cprofile_data=self._cprofile_data,
+            code=self._code,
+            error_path=error_path,
+        ))
 
         pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
 
@@ -182,28 +144,6 @@ class ExamplePythonCode(object):
 
             if error_details['event'] == "exception":
                 exception_raised = ExceptionRaised(error_details)
-
-            elif error_details['event'] == "notequal":
-                raise exceptions.NotEqual((
-                  u"'{0}' is not equal to '{1}'.\n"
-                  u"\n"
-                  u"'{0}' is:\n"
-                  u"{2}\n"
-                  u"\n"
-                  u"'{1}' is:\n"
-                  u"{3}"
-                  u"DIFF:\n"
-                  u"{4}"
-                ).format(
-                    self._lhs,
-                    self._rhs,
-                    error_details['lhs'],
-                    error_details['rhs'],
-                    ''.join(difflib.ndiff(
-                        error_details['lhs'].splitlines(1),
-                        error_details['rhs'].splitlines(1)
-                    )),
-                ))
             else:
                 raise TypeError(
                     "Invalid error event type {0} reported.".format(error_details['event'])

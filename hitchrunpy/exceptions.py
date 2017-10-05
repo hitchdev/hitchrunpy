@@ -80,10 +80,6 @@ class ExpectedExceptionButNoExceptionOccurred(HitchRunPyException):
     pass
 
 
-class NotEqual(HitchRunPyException):
-    pass
-
-
 class OutputAppearsDifferent(HitchRunPyException):
     pass
 

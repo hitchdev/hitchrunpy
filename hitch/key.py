@@ -19,6 +19,7 @@ class Engine(BaseEngine):
 
     schema = StorySchema(
         preconditions={
+            Optional("long string"): Str(),
             Optional("runner python version"): Str(),
             Optional("working python version"): Str(),
             Optional("setup"): Str(),
@@ -79,8 +80,11 @@ class Engine(BaseEngine):
                                                "{{ pyver }}",
                                                self.preconditions['working python version'],
                                            )
+        ).with_long_strings(
+            long_string=self.preconditions.get("long string", "")
         )
 
+    expected_exception(HitchRunPyException)
     def run_code(self):
         self.example_python_code.run(self.path.state, self.python)
 
