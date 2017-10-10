@@ -78,6 +78,14 @@ class RunningCode(object):
     @property
     def iprocess(self):
         return self._iprocess
+    
+    @property
+    def finished(self):
+        try:
+            self._iprocess.psutil
+            return False
+        except:
+            return True
 
 
 class ExamplePythonCode(object):

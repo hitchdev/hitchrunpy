@@ -20,11 +20,15 @@ Running code:
     code: |
       running_code = pyrunner.with_code(long_string).running_code()
 
+      assert not running_code.finished
+
       running_code.iprocess.wait_until_output_contains("favorite color:")
       running_code.iprocess.send_keys("red\n")
       running_code.iprocess.wait_until_output_contains("favorite movie:")
       running_code.iprocess.send_keys("the usual suspects\n")
       running_code.iprocess.wait_until_on_screen("favorite color")
       running_code.iprocess.wait_for_finish()
+
+      assert running_code.finished
   scenario:
   - Run code
