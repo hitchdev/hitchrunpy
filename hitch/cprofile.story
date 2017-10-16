@@ -14,6 +14,6 @@ CProfile:
 
       data = pstats.Stats("profiledata.dat").sort_stats('cumulative')
       data.calc_callees()
-      Ensure(data.stats).has_key(('<string>', 1, 'do_calculation'))
+      Ensure(data.stats).has_key(('examplepythoncode.py', 50, 'do_calculation'))
   scenario:
   - Run code

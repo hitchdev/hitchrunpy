@@ -74,11 +74,11 @@ class RunningCode(object):
     def __init__(self, iprocess, error_path):
         self._iprocess = iprocess
         self._error_path = error_path
-    
+
     @property
     def iprocess(self):
         return self._iprocess
-    
+
     @property
     def finished(self):
         try:
@@ -118,7 +118,7 @@ class ExamplePythonCode(object):
         new_expyc = copy(self)
         new_expyc._long_strings = strings
         return new_expyc
-    
+
     def with_cprofile(self, filename):
         new_expyc = copy(self)
         new_expyc._cprofile_data = Path(filename).abspath()
@@ -145,14 +145,13 @@ class ExamplePythonCode(object):
         ))
 
         pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
-        
+
         try:
             return RunningCode(ICommand(pycommand).run(), error_path)
         except ICommandError as command_error:
             raise exceptions.ErrorRunningCode(
                 "Error running code. Output:\n\n{0}".format(command_error.screenshot)
             )
-
 
     def run(self):
         """

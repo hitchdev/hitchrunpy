@@ -42,32 +42,23 @@ def _save_exception():
             "event": "exception",
         }))
 
-def not_equal(lhs, rhs):
-    import json
-
-    with open("{{ error_path }}", "w") as handle:
-        handle.write(json.dumps({
-            "event": "notequal",
-            "lhs": repr(lhs),
-            "rhs": repr(rhs),
-        }))
-
 {% if long_strings %}
 {% for name, value in long_strings.items() %}
 {{ name }} = u"""{{ value }}"""
 {% endfor %}
 {% endif %}
 
+
+def runcode():
+    {{ setup_code|indent(4) }}
+    {{ code|indent(4) }}
+
 {% if code or setup_code %}
 try:
-    {{ setup_code|indent(4) }}
-
     {% if cprofile_data %}
-    cProfile.runctx("""\
-{{ code }}
-    """, locals=locals(), globals=globals(), filename="{{ cprofile_data }}")
+    cProfile.runctx("""runcode()""", locals=locals(), globals=globals(), filename="{{ cprofile_data }}")
     {% else %}
-    {{ code|indent(4) }}
+    runcode()
     {% endif %}
 except Exception as error:
     _save_exception()

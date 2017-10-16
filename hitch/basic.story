@@ -39,7 +39,7 @@ Error occurred:
   - Raises exception:
       exception type: hitchrunpy.exceptions.ErrorRunningCode
       message: "Error running code. Output:\n\n  File \"examplepythoncode.py\", line\
-        \ 60                                          \n    x =                  \
+        \ 50                                          \n    x =                  \
         \                                                       \n      ^        \
         \                                                                 \nSyntaxError:\
         \ invalid syntax"
@@ -58,12 +58,14 @@ Unexpected exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
       message: "Unexpected exception 'builtins.Exception' raised. Stacktrace:\n\n\
         [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
-        \n    \n        59 :     import hitchbuildpy\n        60 :     \n    --> [[\
-        \ BRIGHT ]]61[[ RESET ALL ]] :     bundle = hitchbuild.BuildBundle(\n    \
-        \    62 :         hitchbuild.BuildPath(build=\"/path/to/code\", share=\"/path/to/share\"\
-        ),\n    \n    \n\n[[ RED ]][[ BRIGHT ]]builtins.Exception[[ RESET ALL ]]\n\
-        \  [[ DIM ]][[ RED ]]Common base class for all non-exit exceptions.[[ RESET\
-        \ ALL ]]\n[[ RED ]]This should not hâppen[[ RESET FORE ]]"
+        \n    \n        56 : \n        57 : \n    --> [[ BRIGHT ]]58[[ RESET ALL ]]\
+        \ : \n        59 : \n    \n    \n\n[1]: function '[[ BRIGHT ]]runcode[[ RESET\
+        \ ALL ]]'\n  examplepythoncode.py\n\n    \n        49 :             \"lhs\"\
+        : repr(lhs),\n        50 :             \"rhs\": repr(rhs),\n    --> [[ BRIGHT\
+        \ ]]51[[ RESET ALL ]] :         }))\n        52 : \n    \n    \n\n[[ RED ]][[\
+        \ BRIGHT ]]builtins.Exception[[ RESET ALL ]]\n  [[ DIM ]][[ RED ]]Common base\
+        \ class for all non-exit exceptions.[[ RESET ALL ]]\n[[ RED ]]This should\
+        \ not hâppen[[ RESET FORE ]]"
 
 Setup code:
   based on: hitchrunpy

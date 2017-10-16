@@ -34,10 +34,12 @@ Expected exception was different:
       exception type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
       message: "Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException'\
         \ was raised:\n\n[0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
-        \n    \n        62 :         hitchbuild.BuildPath(build=\"/path/to/code\"\
-        , share=\"/path/to/share\"),\n        63 :     )\n    --> [[ BRIGHT ]]64[[\
-        \ RESET ALL ]] :     \n        65 :     bundle['python3.5.0'] = hitchbuildpy.PythonBuild(\"\
-        3.5.0\")\n    \n    \n\n[[ RED ]][[ BRIGHT ]]__main__.AnotherCustomException[[\
+        \n    \n        59 : \n        60 : try:\n    --> [[ BRIGHT ]]61[[ RESET ALL\
+        \ ]] :     from hitchrunpy import ExamplePythonCode\n        62 :     from\
+        \ ensure import Ensure\n    \n    \n\n[1]: function '[[ BRIGHT ]]runcode[[\
+        \ RESET ALL ]]'\n  examplepythoncode.py\n\n    \n        52 : \n        53\
+        \ : \n    --> [[ BRIGHT ]]54[[ RESET ALL ]] : \n        55 : long_string =\
+        \ u\"\"\"\"\"\"\n    \n    \n\n[[ RED ]][[ BRIGHT ]]__main__.AnotherCustomException[[\
         \ RESET ALL ]]\n  [[ DIM ]][[ RED ]]None[[ RESET ALL ]]\n[[ RED ]]This should\
         \ happen[[ RESET FORE ]]"
 

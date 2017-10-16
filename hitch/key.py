@@ -84,7 +84,7 @@ class Engine(BaseEngine):
             long_string=self.preconditions.get("long string", "")
         )
 
-    expected_exception(HitchRunPyException)
+    @expected_exception(HitchRunPyException)
     def run_code(self):
         self.example_python_code.run(self.path.state, self.python)
 
