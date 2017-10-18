@@ -39,7 +39,7 @@ Error occurred:
   - Raises exception:
       exception type: hitchrunpy.exceptions.ErrorRunningCode
       message: "Error running code. Output:\n\n  File \"examplepythoncode.py\", line\
-        \ 50                                          \n    x =                  \
+        \ 54                                          \n    x =                  \
         \                                                       \n      ^        \
         \                                                                 \nSyntaxError:\
         \ invalid syntax"
@@ -58,11 +58,15 @@ Unexpected exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
       message: "Unexpected exception 'builtins.Exception' raised. Stacktrace:\n\n\
         [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
-        \n    \n        56 : \n        57 : \n    --> [[ BRIGHT ]]58[[ RESET ALL ]]\
-        \ : \n        59 : \n    \n    \n\n[1]: function '[[ BRIGHT ]]runcode[[ RESET\
-        \ ALL ]]'\n  examplepythoncode.py\n\n    \n        49 :             \"lhs\"\
-        : repr(lhs),\n        50 :             \"rhs\": repr(rhs),\n    --> [[ BRIGHT\
-        \ ]]51[[ RESET ALL ]] :         }))\n        52 : \n    \n    \n\n[[ RED ]][[\
+        \n    \n        61 :     from hitchrunpy import ExamplePythonCode\n      \
+        \  62 :     from ensure import Ensure\n    --> [[ BRIGHT ]]63[[ RESET ALL\
+        \ ]] :     import hitchbuildpy\n        64 :     import hitchbuild\n    \n\
+        \    \n\n[1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'\n  examplepythoncode.py\n\
+        \n    \n        58 : \n        59 : \n    --> [[ BRIGHT ]]60[[ RESET ALL ]]\
+        \ : try:\n        61 :     from hitchrunpy import ExamplePythonCode\n    \n\
+        \    \n\n[2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'\n  examplepythoncode.py\n\
+        \n    \n        53 : \n        54 : \n    --> [[ BRIGHT ]]55[[ RESET ALL ]]\
+        \ : long_string = u\"\"\"\"\"\"\n        56 : \n    \n    \n\n[[ RED ]][[\
         \ BRIGHT ]]builtins.Exception[[ RESET ALL ]]\n  [[ DIM ]][[ RED ]]Common base\
         \ class for all non-exit exceptions.[[ RESET ALL ]]\n[[ RED ]]This should\
         \ not hâppen[[ RESET FORE ]]"

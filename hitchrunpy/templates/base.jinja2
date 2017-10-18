@@ -49,17 +49,21 @@ def _save_exception():
 {% endif %}
 
 
-def runcode():
-    {{ setup_code|indent(4) }}
-    {{ code|indent(4) }}
-
 {% if code or setup_code %}
-try:
-    {% if cprofile_data %}
-    cProfile.runctx("""runcode()""", locals=locals(), globals=globals(), filename="{{ cprofile_data }}")
-    {% else %}
-    runcode()
-    {% endif %}
+try:    
+    def run_example_code():
+        {{ setup_code|indent(8) }}
+        
+        def runcode():
+            {{ code|indent(12) }}
+
+        {% if cprofile_data %}
+        cProfile.runctx("""runcode()""", locals=locals(), globals=globals(), filename="{{ cprofile_data }}")
+        {% else %}
+        runcode()
+        {% endif %}
+    
+    run_example_code()
 except Exception as error:
     _save_exception()
     sys.exit(0)
