@@ -29,7 +29,6 @@ Long strings:
       filename: examplefile
       contents: â long string
 
-
 Error occurred:
   based on: hitchrunpy
   preconditions:
@@ -38,11 +37,13 @@ Error occurred:
   scenario:
   - Raises exception:
       exception type: hitchrunpy.exceptions.ErrorRunningCode
-      message: "Error running code. Output:\n\n  File \"examplepythoncode.py\", line\
-        \ 54                                          \n    x =                  \
-        \                                                       \n      ^        \
-        \                                                                 \nSyntaxError:\
-        \ invalid syntax"
+      message: |-
+        Error running code. Output:
+
+          File "examplepythoncode.py", line 56
+            x =
+              ^
+        SyntaxError: invalid syntax
 
 Unexpected exception:
   based on: hitchrunpy
@@ -56,20 +57,45 @@ Unexpected exception:
   scenario:
   - Raises exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
-      message: "Unexpected exception 'builtins.Exception' raised. Stacktrace:\n\n\
-        [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
-        \n    \n        61 :     from hitchrunpy import ExamplePythonCode\n      \
-        \  62 :     from ensure import Ensure\n    --> [[ BRIGHT ]]63[[ RESET ALL\
-        \ ]] :     import hitchbuildpy\n        64 :     import hitchbuild\n    \n\
-        \    \n\n[1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'\n  examplepythoncode.py\n\
-        \n    \n        58 : \n        59 : \n    --> [[ BRIGHT ]]60[[ RESET ALL ]]\
-        \ : try:\n        61 :     from hitchrunpy import ExamplePythonCode\n    \n\
-        \    \n\n[2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'\n  examplepythoncode.py\n\
-        \n    \n        53 : \n        54 : \n    --> [[ BRIGHT ]]55[[ RESET ALL ]]\
-        \ : long_string = u\"\"\"\"\"\"\n        56 : \n    \n    \n\n[[ RED ]][[\
-        \ BRIGHT ]]builtins.Exception[[ RESET ALL ]]\n  [[ DIM ]][[ RED ]]Common base\
-        \ class for all non-exit exceptions.[[ RESET ALL ]]\n[[ RED ]]This should\
-        \ not hâppen[[ RESET FORE ]]"
+      message: |-
+        Unexpected exception 'builtins.Exception' raised. Stacktrace:
+
+        [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
+          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+
+
+                64 :
+                65 :
+            --> [[ BRIGHT ]]66[[ RESET ALL ]] :     run_example_code()
+                67 : except Exception as error:
+
+
+
+        [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
+          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+
+
+                60 :
+                61 :
+            --> [[ BRIGHT ]]62[[ RESET ALL ]] :         runcode()
+                63 :
+
+
+
+        [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
+          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+
+
+                55 :
+                56 :
+            --> [[ BRIGHT ]]57[[ RESET ALL ]] :                 raise Exception('This should not hâppen')
+                58 :
+
+
+
+        [[ RED ]][[ BRIGHT ]]builtins.Exception[[ RESET ALL ]]
+          [[ DIM ]][[ RED ]]Common base class for all non-exit exceptions.[[ RESET ALL ]]
+        [[ RED ]]This should not hâppen[[ RESET FORE ]]
 
 Setup code:
   based on: hitchrunpy

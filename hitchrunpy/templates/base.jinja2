@@ -7,6 +7,7 @@ if sys.version_info[0] == 3:
 
 def _save_exception():
     import json
+    from os.path import abspath
 
     tb_id = 0
     _, exception, tb = sys.exc_info()
@@ -23,7 +24,7 @@ def _save_exception():
 
         tracebacks.append({
             "tb_id": tb_id,
-            "filename": tb.tb_frame.f_code.co_filename,
+            "filename": abspath(tb.tb_frame.f_code.co_filename),
             "line": tb.tb_lineno,
             "function": tb.tb_frame.f_code.co_name,
         })
@@ -54,6 +55,7 @@ try:
     def run_example_code():
         {{ setup_code|indent(8) }}
         
+        {% if code %}
         def runcode():
             {{ code|indent(12) }}
 
@@ -62,7 +64,8 @@ try:
         {% else %}
         runcode()
         {% endif %}
-    
+        {% endif %}
+
     run_example_code()
 except Exception as error:
     _save_exception()

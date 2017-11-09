@@ -92,6 +92,7 @@ class ExamplePythonCode(object):
     def __init__(self, python_bin, working_dir):
         self._python_bin = python_bin
         self._working_dir = working_dir
+        self._terminal_size = (80, 24)
 
         self._setup_code = u''
         self._code = u''
@@ -102,6 +103,11 @@ class ExamplePythonCode(object):
     def with_code(self, code):
         new_expyc = copy(self)
         new_expyc._code = code
+        return new_expyc
+
+    def with_terminal_size(self, width, height):
+        new_expyc = copy(self)
+        new_expyc._terminal_size = (width, height)
         return new_expyc
 
     def with_setup_code(self, setup_code):
@@ -176,7 +182,8 @@ class ExamplePythonCode(object):
         pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
 
         try:
-            finished_process = ICommand(pycommand).run()\
+            finished_process = ICommand(pycommand).screensize(*self._terminal_size)\
+                                                  .run()\
                                                   .wait_for_successful_exit()
             command_output = finished_process.screenshot.strip()
         except ICommandError as command_error:

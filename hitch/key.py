@@ -94,14 +94,17 @@ class Engine(BaseEngine):
         try:
             result = self.example_python_code.expect_exceptions().run(self.path.state, self.python)
             result.exception_was_raised(exception_type)
-            processed_message = result.exception.message\
-                                      .replace(self.path.state, "/path/to/code")\
-                                      .replace(self.path.share, "/path/to/share")\
-                                      .replace(colorama.Fore.RED, "[[ RED ]]")\
-                                      .replace(colorama.Style.BRIGHT, "[[ BRIGHT ]]")\
-                                      .replace(colorama.Style.DIM, "[[ DIM ]]")\
-                                      .replace(colorama.Fore.RESET, "[[ RESET FORE ]]")\
-                                      .replace(colorama.Style.RESET_ALL, "[[ RESET ALL ]]")
+            processed_message = '\n'.join([
+                line.rstrip() for line in result.exception.message
+                    .replace(self.path.state, "/path/to/code")
+                    .replace(self.path.share, "/path/to/share")
+                    .replace(colorama.Fore.RED, "[[ RED ]]")
+                    .replace(colorama.Style.BRIGHT, "[[ BRIGHT ]]")
+                    .replace(colorama.Style.DIM, "[[ DIM ]]")
+                    .replace(colorama.Fore.RESET, "[[ RESET FORE ]]")
+                    .replace(colorama.Style.RESET_ALL, "[[ RESET ALL ]]")
+                    .split('\n')
+            ])
             Templex(processed_message).assert_match(message)
         except NonMatching:
             if self.settings.get("rewrite"):

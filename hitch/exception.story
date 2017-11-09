@@ -32,20 +32,45 @@ Expected exception was different:
   scenario:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
-      message: "Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException'\
-        \ was raised:\n\n[0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  examplepythoncode.py\n\
-        \n    \n        64 :     import hitchbuild\n        65 :     \n    --> [[\
-        \ BRIGHT ]]66[[ RESET ALL ]] :     bundle = hitchbuild.BuildBundle(\n    \
-        \    67 :         hitchbuild.BuildPath(build=\"/path/to/code\", share=\"/path/to/share\"\
-        ),\n    \n    \n\n[1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL\
-        \ ]]'\n  examplepythoncode.py\n\n    \n        61 :     from hitchrunpy import\
-        \ ExamplePythonCode\n        62 :     from ensure import Ensure\n    --> [[\
-        \ BRIGHT ]]63[[ RESET ALL ]] :     import hitchbuildpy\n        64 :     import\
-        \ hitchbuild\n    \n    \n\n[2]: function '[[ BRIGHT ]]runcode[[ RESET ALL\
-        \ ]]'\n  examplepythoncode.py\n\n    \n        56 : \n        57 : \n    -->\
-        \ [[ BRIGHT ]]58[[ RESET ALL ]] : \n        59 : \n    \n    \n\n[[ RED ]][[\
-        \ BRIGHT ]]__main__.AnotherCustomException[[ RESET ALL ]]\n  [[ DIM ]][[ RED\
-        \ ]]None[[ RESET ALL ]]\n[[ RED ]]This should happen[[ RESET FORE ]]"
+      message: |-
+        Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
+
+        [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
+          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+
+
+                67 :
+                68 :
+            --> [[ BRIGHT ]]69[[ RESET ALL ]] :     run_example_code()
+                70 : except Exception as error:
+
+
+
+        [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
+          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+
+
+                63 :
+                64 :
+            --> [[ BRIGHT ]]65[[ RESET ALL ]] :         runcode()
+                66 :
+
+
+
+        [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
+          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+
+
+                58 :                     pass
+                59 :
+            --> [[ BRIGHT ]]60[[ RESET ALL ]] :                 raise AnotherCustomException('This should happen')
+                61 :
+
+
+
+        [[ RED ]][[ BRIGHT ]]__main__.AnotherCustomException[[ RESET ALL ]]
+          [[ DIM ]][[ RED ]]None[[ RESET ALL ]]
+        [[ RED ]]This should happen[[ RESET FORE ]]
 
 Expect exception with no details:
   based on: hitchrunpy
