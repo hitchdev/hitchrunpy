@@ -1,5 +1,5 @@
 hitchpython
-hitchrunpy
+hitchrunpy>=0.4.0
 hitchstory
 hitchrun
 kaching

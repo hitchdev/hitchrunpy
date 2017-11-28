@@ -88,7 +88,7 @@ Unexpected exception:
 
                 55 :
                 56 :
-            --> [[ BRIGHT ]]57[[ RESET ALL ]] :                 raise Exception('This should not hâppen')
+            --> [[ BRIGHT ]]57[[ RESET ALL ]] :                         raise Exception('This should not hâppen')
                 58 :
 
 

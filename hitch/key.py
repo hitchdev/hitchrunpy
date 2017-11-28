@@ -71,6 +71,9 @@ class Engine(BaseEngine):
                 self.pip("install", ".").in_dir(self.path.project).run()
 
         self.example_python_code = ExamplePythonCode(
+            self.python,
+            self.path.state,
+        ).with_code(
             self.preconditions.get('code', '')
         ).with_setup_code(
             self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
@@ -86,13 +89,13 @@ class Engine(BaseEngine):
 
     @expected_exception(HitchRunPyException)
     def run_code(self):
-        self.example_python_code.run(self.path.state, self.python)
+        self.example_python_code.run()
 
     @expected_exception(TemplexException)
     @expected_exception(HitchRunPyException)
     def raises_exception(self, message=None, exception_type=None):
         try:
-            result = self.example_python_code.expect_exceptions().run(self.path.state, self.python)
+            result = self.example_python_code.expect_exceptions().run()
             result.exception_was_raised(exception_type)
             processed_message = '\n'.join([
                 line.rstrip() for line in result.exception.message

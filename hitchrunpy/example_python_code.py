@@ -1,6 +1,6 @@
 from jinja2 import FileSystemLoader, environment
 from commandlib import Command
-from icommandlib import ICommand, ICommandError
+from icommandlib import ICommand, ICommandError, IProcessTimeout
 from prettystack import PrettyStackTemplate
 from hitchrunpy import exceptions
 from path import Path
@@ -99,6 +99,7 @@ class ExamplePythonCode(object):
         self._expect_exceptions = False
         self._long_strings = None
         self._cprofile_data = None
+        self._timeout = None
 
     def with_code(self, code):
         new_expyc = copy(self)
@@ -128,6 +129,11 @@ class ExamplePythonCode(object):
     def with_cprofile(self, filename):
         new_expyc = copy(self)
         new_expyc._cprofile_data = Path(filename).abspath()
+        return new_expyc
+
+    def with_timeout(self, timeout):
+        new_expyc = copy(self)
+        new_expyc._timeout = timeout
         return new_expyc
 
     def running_code(self):
@@ -181,11 +187,18 @@ class ExamplePythonCode(object):
 
         pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
 
+        icommand = ICommand(pycommand).screensize(*self._terminal_size)
+
+        if self._timeout is not None:
+            icommand = icommand.with_timeout(self._timeout)
+
         try:
-            finished_process = ICommand(pycommand).screensize(*self._terminal_size)\
-                                                  .run()\
-                                                  .wait_for_successful_exit()
+            finished_process = icommand.run().wait_for_successful_exit()
             command_output = finished_process.screenshot.strip()
+        except IProcessTimeout as timeout_error:
+            raise exceptions.PythonTimeout(
+                str(timeout_error)
+            )
         except ICommandError as command_error:
             raise exceptions.ErrorRunningCode(
                 "Error running code. Output:\n\n{0}".format(command_error.screenshot)

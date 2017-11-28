@@ -76,6 +76,10 @@ class ExceptionDoesNotMatchFunction(HitchRunPyException):
         ))
 
 
+class PythonTimeout(HitchRunPyException):
+    pass
+
+
 class ExpectedExceptionButNoExceptionOccurred(HitchRunPyException):
     pass
 

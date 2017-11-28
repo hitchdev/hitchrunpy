@@ -61,9 +61,9 @@ Expected exception was different:
           /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
 
 
-                58 :                     pass
+                58 :                             pass
                 59 :
-            --> [[ BRIGHT ]]60[[ RESET ALL ]] :                 raise AnotherCustomException('This should happen')
+            --> [[ BRIGHT ]]60[[ RESET ALL ]] :                         raise AnotherCustomException('This should happen')
                 61 :
 
 
