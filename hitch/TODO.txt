@@ -1,2 +1,3 @@
-Test with non-ascii characters in exceptions.
-Test with many different versions of python.
+- When unexpected exceptions happen, print screenshot in exception too.
+- Test with non-ascii characters in exceptions.
+- Test with many different versions of python.
