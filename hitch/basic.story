@@ -51,6 +51,8 @@ Unexpected exception:
     code: |
       pyrunner.with_code("""
 
+      print('This is ân explanation for what happened printed to stdout')
+
       raise Exception('This should not hâppen')
 
       """).run()
@@ -58,16 +60,20 @@ Unexpected exception:
   - Raises exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
       message: |-
-        Unexpected exception 'builtins.Exception' raised. Stacktrace:
+        Unexpected exception 'builtins.Exception' raised.
+
+        This is ân explanation for what happened printed to stdout
+
+        Stacktrace:
 
         [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
           /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
 
 
-                64 :
-                65 :
-            --> [[ BRIGHT ]]66[[ RESET ALL ]] :     run_example_code()
-                67 : except Exception as error:
+                66 :
+                67 :
+            --> [[ BRIGHT ]]68[[ RESET ALL ]] :     run_example_code()
+                69 : except Exception as error:
 
 
 
@@ -75,10 +81,10 @@ Unexpected exception:
           /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
 
 
-                60 :
-                61 :
-            --> [[ BRIGHT ]]62[[ RESET ALL ]] :         runcode()
+                62 :
                 63 :
+            --> [[ BRIGHT ]]64[[ RESET ALL ]] :         runcode()
+                65 :
 
 
 
@@ -86,10 +92,10 @@ Unexpected exception:
           /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
 
 
-                55 :
-                56 :
-            --> [[ BRIGHT ]]57[[ RESET ALL ]] :                         raise Exception('This should not hâppen')
+                57 :                         print('This is ân explanation for what happened printed to stdout')
                 58 :
+            --> [[ BRIGHT ]]59[[ RESET ALL ]] :                         raise Exception('This should not hâppen')
+                60 :
 
 
 

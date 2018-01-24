@@ -221,6 +221,7 @@ class ExamplePythonCode(object):
                     exception_raised.exception_type,
                     exception_raised.message,
                     exception_raised.formatted_stacktrace,
+                    command_output,
                 )
 
         return Result(exception=exception_raised, output=command_output)

@@ -6,14 +6,16 @@ class UnexpectedException(HitchRunPyException):
     """
     An unexpected exception was raised.
     """
-    def __init__(self, exception_type, message, formatted_stacktrace):
+    def __init__(self, exception_type, message, formatted_stacktrace, command_output):
         self.exception_type = exception_type
         self.message = message
         self.formatted_stacktrace = formatted_stacktrace
+        self.command_output = command_output
         super(HitchRunPyException, self).__init__((
-            u"Unexpected exception '{0}' raised. Stacktrace:\n{1}"
+            u"Unexpected exception '{0}' raised.\n\n{1}\n\nStacktrace:\n{2}"
         ).format(
             self.exception_type,
+            self.command_output,
             self.formatted_stacktrace,
         ))
 
