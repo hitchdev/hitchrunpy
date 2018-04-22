@@ -100,10 +100,16 @@ class ExamplePythonCode(object):
         self._long_strings = None
         self._cprofile_data = None
         self._timeout = None
+        self._environment_variables = {}
 
     def with_code(self, code):
         new_expyc = copy(self)
         new_expyc._code = code
+        return new_expyc
+
+    def with_env(self, **environment_vars):
+        new_expyc = copy(self)
+        new_expyc._environment_variables = environment_vars
         return new_expyc
 
     def with_terminal_size(self, width, height):
@@ -156,7 +162,9 @@ class ExamplePythonCode(object):
             error_path=error_path,
         ))
 
-        pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
+        pycommand = Command(self._python_bin, "examplepythoncode.py")\
+            .with_env(**self._environment_variables)\
+            .in_dir(working_dir)
 
         try:
             return RunningCode(ICommand(pycommand).run(), error_path)
@@ -185,7 +193,9 @@ class ExamplePythonCode(object):
             error_path=error_path,
         ))
 
-        pycommand = Command(self._python_bin, "examplepythoncode.py").in_dir(working_dir)
+        pycommand = Command(self._python_bin, "examplepythoncode.py")\
+            .with_env(**self._environment_variables)\
+            .in_dir(working_dir)
 
         icommand = ICommand(pycommand).screensize(*self._terminal_size)
 
