@@ -1,4 +1,4 @@
-Environment variables:
+sys argv:
   based on: hitchrunpy
   preconditions:
     code: |
