@@ -1,6 +1,6 @@
 sys argv:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       pyrunner.with_env(MYVAR="myenvironmentvar").with_code((
           'import os\n'
@@ -8,8 +8,8 @@ sys argv:
           'with open("examplefile", "w") as handle:\n'
           '     handle.write(os.environ["MYVAR"])\n'
       )).run()
-  scenario:
+  steps:
   - Run code
-  - File contains:
+  - File in working dir contains:
       filename: examplefile
       contents: myenvironmentvar

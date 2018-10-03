@@ -1,21 +1,21 @@
 Run code:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       pyrunner.with_code((
           'with open("examplefile", "w") as handle:'
           '     handle.write("exampletext")'
       )).run()
-  scenario:
+  steps:
   - Run code
-  - File contains:
+  - File in working dir contains:
       filename: examplefile
       contents: exampletext
 
 
 Long strings:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       long_string = u"â long string"
 
@@ -23,18 +23,18 @@ Long strings:
           'with open("examplefile", "w") as handle:'
           '     handle.write(long_string)'
       )).with_long_strings(long_string=long_string).run()
-  scenario:
+  steps:
   - Run code
-  - File contains:
+  - File in working dir contains:
       filename: examplefile
       contents: â long string
 
 Error occurred:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       pyrunner.with_code('''x =''').run()
-  scenario:
+  steps:
   - Raises exception:
       exception type: hitchrunpy.exceptions.ErrorRunningCode
       message: |-
@@ -47,7 +47,7 @@ Error occurred:
 
 Unexpected exception:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       pyrunner.with_code("""
 
@@ -56,7 +56,7 @@ Unexpected exception:
       raise Exception('This should not hâppen')
 
       """).run()
-  scenario:
+  steps:
   - Raises exception:
       exception type: hitchrunpy.exceptions.UnexpectedException
       message: |-
@@ -67,7 +67,7 @@ Unexpected exception:
         Stacktrace:
 
         [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
-          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+          /path/to/code/examplepythoncode.py
 
 
                 66 :
@@ -78,7 +78,7 @@ Unexpected exception:
 
 
         [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
-          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+          /path/to/code/examplepythoncode.py
 
 
                 62 :
@@ -89,7 +89,7 @@ Unexpected exception:
 
 
         [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
-          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+          /path/to/code/examplepythoncode.py
 
 
                 57 :                         print('This is ân explanation for what happened printed to stdout')
@@ -105,15 +105,15 @@ Unexpected exception:
 
 Setup code:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       pyrunner.with_code((
           'with open("examplefile", "w") as handle:'
           '     handle.write(exampletext)'
       )).with_setup_code("exampletext = 'exampletext'")\
         .run()
-  scenario:
+  steps:
   - Run code
-  - File contains:
+  - File in working dir contains:
       filename: examplefile
       contents: exampletext

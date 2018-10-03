@@ -84,7 +84,7 @@ class RunningCode(object):
         try:
             self._iprocess.psutil
             return False
-        except:
+        except Exception:
             return True
 
 
@@ -167,7 +167,10 @@ class ExamplePythonCode(object):
             .in_dir(working_dir)
 
         try:
-            return RunningCode(ICommand(pycommand).run(), error_path)
+            return RunningCode(
+                ICommand(pycommand).screensize(*self._terminal_size).run(),
+                error_path
+            )
         except ICommandError as command_error:
             raise exceptions.ErrorRunningCode(
                 "Error running code. Output:\n\n{0}".format(command_error.screenshot)
@@ -201,9 +204,12 @@ class ExamplePythonCode(object):
 
         if self._timeout is not None:
             icommand = icommand.with_timeout(self._timeout)
+            import q
+            q(self._timeout)
 
         try:
-            finished_process = icommand.run().wait_for_successful_exit()
+            finished_process = icommand.run()\
+                                       .wait_for_successful_exit(timeout=self._timeout)
             command_output = finished_process.screenshot.strip()
         except IProcessTimeout as timeout_error:
             raise exceptions.PythonTimeout(

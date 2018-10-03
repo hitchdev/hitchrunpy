@@ -1,6 +1,6 @@
 Exception occurs as expected:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       result = pyrunner.with_code("""
 
@@ -12,12 +12,12 @@ Exception occurs as expected:
       """).expect_exceptions().run()
 
       result.exception_was_raised("__main__.CustomException", "This should hâppen")
-  scenario:
+  steps:
   - Run code
 
 Expected exception was different:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       result = pyrunner.with_code("""
 
@@ -29,14 +29,14 @@ Expected exception was different:
       """).expect_exceptions().run()
 
       result.exception_was_raised("__main__.CustomException", "This should hâppen")
-  scenario:
+  steps:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
       message: |-
         Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
 
         [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
-          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+          /path/to/code/examplepythoncode.py
 
 
                 67 :
@@ -47,7 +47,7 @@ Expected exception was different:
 
 
         [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
-          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+          /path/to/code/examplepythoncode.py
 
 
                 63 :
@@ -58,7 +58,7 @@ Expected exception was different:
 
 
         [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
-          /home/colm/.hitch/mdkgjt/working/examplepythoncode.py
+          /path/to/code/examplepythoncode.py
 
 
                 58 :                             pass
@@ -74,7 +74,7 @@ Expected exception was different:
 
 Expect exception with no details:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       result = pyrunner.with_code("""
 
@@ -83,13 +83,13 @@ Expect exception with no details:
       """).expect_exceptions().run()
 
       result.exception_was_raised()
-  scenario:
+  steps:
   - Run code
 
 
 Expected exception but no exception occurred:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       result = pyrunner.with_code("""
 
@@ -98,7 +98,7 @@ Expected exception but no exception occurred:
       """).expect_exceptions().run()
 
       result.exception_was_raised("__main__.CustomException", "This should hâppen")
-  scenario:
+  steps:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.ExpectedExceptionButNoExceptionOccurred
       message: |
@@ -107,7 +107,7 @@ Expected exception but no exception occurred:
 
 Expected exception has different message:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       result = pyrunner.with_code("""
 
@@ -119,7 +119,7 @@ Expected exception has different message:
       """).expect_exceptions().run()
 
       result.exception_was_raised("__main__.CustomException", 'This was\nthe expected messâge')
-  scenario:
+  steps:
   - Raises Exception:
       exception_type: hitchrunpy.exceptions.ExpectedExceptionMessageWasDifferent
       message: |-

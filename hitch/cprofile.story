@@ -1,6 +1,6 @@
 CProfile:
   based on: hitchrunpy
-  preconditions:
+  given:
     long string: |
       def do_calculation(number):
           x = i^i
@@ -15,5 +15,5 @@ CProfile:
       data = pstats.Stats("profiledata.dat").sort_stats('cumulative')
       data.calc_callees()
       Ensure(data.stats).has_key(('examplepythoncode.py', 56, 'do_calculation'))
-  scenario:
+  steps:
   - Run code

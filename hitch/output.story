@@ -1,21 +1,21 @@
 Print message appears the same:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       result = pyrunner.with_code('''print("hello")''').run()
 
       result.final_output_was('hello')
-  scenario:
+  steps:
   - Run code
 
 Print message appears differently:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       result = pyrunner.with_code('''print("goodbye")''').run()
 
       result.final_output_was('hello')
-  scenario:
+  steps:
   - Raises Exception:
       exception type: hitchrunpy.exceptions.OutputAppearsDifferent
       message: |
@@ -27,7 +27,7 @@ Print message appears differently:
 
 Larger screen:
   based on: hitchrunpy
-  preconditions:
+  given:
     code: |
       long_string = (
         u"â string that is much longer that 80 characters string. "
@@ -41,5 +41,5 @@ Larger screen:
         .run()
 
       result.final_output_was(long_string)
-  scenario:
+  steps:
   - Run code

@@ -1,30 +1,27 @@
-from commandlib import run, Command
-import hitchpython
-from hitchstory import StoryCollection, StorySchema, BaseEngine, exceptions, expected_exception
+from commandlib import Command
+from hitchstory import StoryCollection, GivenDefinition, GivenProperty
+from hitchstory import BaseEngine, no_stacktrace_for, HitchStoryException
 from hitchrun import expected
-from strictyaml import Str, Optional
-from pathquery import pathq
-import hitchtest
-import hitchdoc
+from strictyaml import Str
+from pathquery import pathquery
 from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
-from templex import Templex, NonMatching, TemplexException
+import hitchpylibrarytoolkit
+from templex import Templex
 import colorama
 
 
 class Engine(BaseEngine):
     """Python engine for running tests."""
 
-    schema = StorySchema(
-        preconditions={
-            Optional("long string"): Str(),
-            Optional("runner python version"): Str(),
-            Optional("working python version"): Str(),
-            Optional("setup"): Str(),
-            Optional("code"): Str(),
-        },
+    given_definition = GivenDefinition(
+        long_string=GivenProperty(Str()),
+        runner_python_version=GivenProperty(Str()),
+        working_python_version=GivenProperty(Str()),
+        setup=GivenProperty(Str()),
+        code=GivenProperty(Str()),
     )
 
     def __init__(self, paths, settings):
@@ -33,15 +30,8 @@ class Engine(BaseEngine):
 
     def set_up(self):
         """Set up your applications and the test environment."""
-        from path import Path
-        self.path.state = self.path.gen.joinpath("state")
-        self.path.working_dir = self.path.gen.joinpath("working")
-        self.path.share = Path("~/.hitchpkg/").expand()
-
-        self.doc = hitchdoc.Recorder(
-            hitchdoc.HitchStory(self),
-            self.path.gen.joinpath('storydb.sqlite'),
-        )
+        self.path.state = self.path.gen / "state"
+        self.path.working_dir = self.path.gen / "working"
 
         if self.path.state.exists():
             self.path.state.rmtree(ignore_errors=True)
@@ -51,72 +41,65 @@ class Engine(BaseEngine):
             self.path.working_dir.rmtree(ignore_errors=True)
         self.path.working_dir.mkdir()
 
-        self.python_package = hitchpython.PythonPackage(
-            self.preconditions.get('python_version', '3.5.0')
-        )
-        self.python_package.build()
-
-        self.pip = self.python_package.cmd.pip
-        self.python = self.python_package.cmd.python
-
-        # Install debugging packages
-        with hitchtest.monitor([self.path.key.joinpath("debugrequirements.txt")]) as changed:
-            if changed:
-                run(self.pip("install", "-r", "debugrequirements.txt").in_dir(self.path.key))
-
-        # Uninstall and reinstall
-        with hitchtest.monitor(pathq(self.path.project.joinpath("hitchrunpy"))) as changed:
-            if changed:
-                self.pip("uninstall", "hitchrunpy", "-y").ignore_errors().run()
-                self.pip("install", ".").in_dir(self.path.project).run()
+        self.python = hitchpylibrarytoolkit.project_build(
+            "hitchrunpy",
+            self.path,
+            self.given["runner python version"],
+        ).bin.python
 
         self.example_python_code = ExamplePythonCode(
             self.python,
             self.path.state,
         ).with_code(
-            self.preconditions.get('code', '')
+            self.given.get('code', '')
         ).with_setup_code(
-            self.preconditions.get('setup').replace("/path/to/working_dir", self.path.working_dir)
-                                           .replace("/path/to/share_dir/", self.path.share)
-                                           .replace("/path/to/build_dir/", self.path.state)
-                                           .replace(
-                                               "{{ pyver }}",
-                                               self.preconditions['working python version'],
-                                           )
+            self.given.get('setup').replace("/path/to/working_dir", self.path.working_dir)
+                                   .replace("/path/to/share_dir/", self.path.share)
+                                   .replace("/path/to/build_dir/", self.path.state)
+                                   .replace(
+                                       "{{ pyver }}",
+                                       self.given['working python version'],
+                                   )
         ).with_long_strings(
-            long_string=self.preconditions.get("long string", "")
+            long_string=self.given.get("long string", "")
         )
 
-    @expected_exception(HitchRunPyException)
+    def _output_swap(self, content):
+        return '\n'.join([
+            line.rstrip() for line in content
+                .replace(self.path.gen / "working", "/path/to/code")
+                .replace(self.path.share, "/path/to/share")
+                .replace(colorama.Fore.RED, "[[ RED ]]")
+                .replace(colorama.Style.BRIGHT, "[[ BRIGHT ]]")
+                .replace(colorama.Style.DIM, "[[ DIM ]]")
+                .replace(colorama.Fore.RESET, "[[ RESET FORE ]]")
+                .replace(colorama.Style.RESET_ALL, "[[ RESET ALL ]]")
+                .split('\n')
+        ])
+
+    @no_stacktrace_for(HitchRunPyException)
     def run_code(self):
         self.example_python_code.run()
 
-    @expected_exception(TemplexException)
-    @expected_exception(HitchRunPyException)
+    @no_stacktrace_for(AssertionError)
+    @no_stacktrace_for(HitchRunPyException)
     def raises_exception(self, message=None, exception_type=None):
         try:
             result = self.example_python_code.expect_exceptions().run()
             result.exception_was_raised(exception_type)
-            processed_message = '\n'.join([
-                line.rstrip() for line in result.exception.message
-                    .replace(self.path.state, "/path/to/code")
-                    .replace(self.path.share, "/path/to/share")
-                    .replace(colorama.Fore.RED, "[[ RED ]]")
-                    .replace(colorama.Style.BRIGHT, "[[ BRIGHT ]]")
-                    .replace(colorama.Style.DIM, "[[ DIM ]]")
-                    .replace(colorama.Fore.RESET, "[[ RESET FORE ]]")
-                    .replace(colorama.Style.RESET_ALL, "[[ RESET ALL ]]")
-                    .split('\n')
-            ])
+            processed_message = self._output_swap(result.exception.message)
             Templex(processed_message).assert_match(message)
-        except NonMatching:
+        except AssertionError:
             if self.settings.get("rewrite"):
                 self.current_step.update(message=processed_message)
             else:
                 raise
 
-    def file_contains(self, filename, contents):
+    def file_in_working_dir_contains(self, filename, contents):
         assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
+
+    def file_in_written_by_code_contains(self, filename, contents):
+        assert self.path.state.joinpath(filename).bytes().decode('utf8') == contents
 
     def pause(self, message="Pause"):
         import IPython
@@ -127,28 +110,34 @@ class Engine(BaseEngine):
             self.new_story.save()
 
 
-@expected(exceptions.HitchStoryException)
-def tdd(*words):
+@expected(HitchStoryException)
+def bdd(*words):
     """
     Run test with words.
     """
-    print(
-        StoryCollection(
-            pathq(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
-        ).shortcut(*words).play().report()
-    )
+    StoryCollection(
+        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": False})
+    ).shortcut(*words).play()
 
 
-@expected(exceptions.HitchStoryException)
-def testfile(filename):
+@expected(HitchStoryException)
+def rbdd(*words):
+    """
+    Run executable spec and rewrite if output has changed.
+    """
+    StoryCollection(
+        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
+    ).shortcut(*words).play()
+
+
+@expected(HitchStoryException)
+def regressfile(filename):
     """
     Run all stories in filename 'filename'.
     """
-    print(
-        StoryCollection(
-            pathq(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
-        ).in_filename(filename).ordered_by_name().play().report()
-    )
+    StoryCollection(
+        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
+    ).in_filename(filename).ordered_by_name().play().report()
 
 
 def regression():
@@ -156,21 +145,18 @@ def regression():
     Regression test - run all tests and linter.
     """
     lint()
-    results = StoryCollection(
-        pathq(DIR.key).ext("story"), Engine(DIR, {})
+    StoryCollection(
+        pathquery(DIR.key).ext("story"), Engine(DIR, {})
     ).ordered_by_name().play()
-    print(results.report())
 
 
 def rewriteall():
     """
     Run regression tests with story rewriting on.
     """
-    print(
-        StoryCollection(
-            pathq(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
-        ).ordered_by_name().play().report()
-    )
+    StoryCollection(
+        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
+    ).ordered_by_name().play().report()
 
 
 def lint():
@@ -188,13 +174,6 @@ def lint():
         "--exclude=__init__.py",
     ).run()
     print("Lint success!")
-
-
-def hitch(*args):
-    """
-    Use 'h hitch --help' to get help on these commands.
-    """
-    hitch_maintenance(*args)
 
 
 def deploy(version):
@@ -231,24 +210,3 @@ def deploy(version):
     python(
         "-m", "twine", "upload", "dist/{0}-{1}.tar.gz".format(NAME, version)
     ).in_dir(DIR.project).run()
-
-
-def docgen():
-    """
-    Generate documentation.
-    """
-    docpath = DIR.project.joinpath("docs")
-
-    if not docpath.exists():
-        docpath.mkdir()
-
-    documentation = hitchdoc.Documentation(
-        DIR.gen.joinpath('storydb.sqlite'),
-        'doctemplates.yml'
-    )
-
-    for story in documentation.stories:
-        story.write(
-            "rst",
-            docpath.joinpath("{0}.rst".format(story.slug))
-        )

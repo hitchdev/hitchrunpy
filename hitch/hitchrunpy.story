@@ -1,5 +1,5 @@
 hitchrunpy:
-  preconditions:
+  given:
     runner python version: (( runner python version ))
     working python version: (( working python version ))
     setup: |
@@ -8,19 +8,19 @@ hitchrunpy:
       import hitchbuildpy
       import hitchbuild
 
-      bundle = hitchbuild.BuildBundle(
-          hitchbuild.BuildPath(build="/path/to/build_dir/", share="/path/to/share_dir/"),
-      )
+      virtualenv = hitchbuildpy.VirtualenvBuild(
+          name="py{{ pyver }}",
+          base_python=hitchbuildpy.PyenvBuild("{{ pyver }}").with_build_path(
+              '/path/to/share_dir/'
+          ),
+      ).with_build_path("/path/to/build_dir/")
 
-      bundle['python{{ pyver }}'] = hitchbuildpy.PythonBuild("{{ pyver }}")
-      bundle['venv{{ pyver }}'] = hitchbuildpy.VirtualenvBuild(bundle['python{{ pyver }}'])
-      bundle.ensure_built()
-      
-      
+      virtualenv.ensure_built()
+
       pyrunner = ExamplePythonCode(
-          bundle['python{{ pyver }}'].bin.python,
+          virtualenv.bin.python,
           '/path/to/working_dir',
       )
-  default:
-    runner python version: 3.5.0
-    working python version: 3.5.0
+  with:
+    runner python version: 3.7.0
+    working python version: 3.7.0

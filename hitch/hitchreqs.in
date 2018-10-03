@@ -1,11 +1,2 @@
-hitchpython
-hitchrunpy>=0.4.0
-hitchstory
+hitchpylibrarytoolkit>=0.1.8
 hitchrun
-kaching
-hitchdoc
-templex
-flake8
-twine
-simex
-q
