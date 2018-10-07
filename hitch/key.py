@@ -1,15 +1,13 @@
-from commandlib import Command
 from hitchstory import StoryCollection, GivenDefinition, GivenProperty
 from hitchstory import BaseEngine, no_stacktrace_for, HitchStoryException
 from hitchrun import expected
 from strictyaml import Str
 from pathquery import pathquery
-from commandlib import python
-from hitchrun import hitch_maintenance
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
 import hitchpylibrarytoolkit
 from templex import Templex
+import dirtemplate
 import colorama
 
 
@@ -42,40 +40,36 @@ class Engine(BaseEngine):
         self.path.working_dir.mkdir()
 
         self.python = hitchpylibrarytoolkit.project_build(
-            "hitchrunpy",
-            self.path,
-            self.given["runner python version"],
+            "hitchrunpy", self.path, self.given["runner python version"]
         ).bin.python
 
-        self.example_python_code = ExamplePythonCode(
-            self.python,
-            self.path.state,
-        ).with_code(
-            self.given.get('code', '')
-        ).with_setup_code(
-            self.given.get('setup').replace("/path/to/working_dir", self.path.working_dir)
-                                   .replace("/path/to/share_dir/", self.path.share)
-                                   .replace("/path/to/build_dir/", self.path.state)
-                                   .replace(
-                                       "{{ pyver }}",
-                                       self.given['working python version'],
-                                   )
-        ).with_long_strings(
-            long_string=self.given.get("long string", "")
+        self.example_python_code = (
+            ExamplePythonCode(self.python, self.path.state)
+            .with_code(self.given.get("code", ""))
+            .with_setup_code(
+                self.given.get("setup")
+                .replace("/path/to/working_dir", self.path.working_dir)
+                .replace("/path/to/share_dir/", self.path.share)
+                .replace("/path/to/build_dir/", self.path.state)
+                .replace("{{ pyver }}", self.given["working python version"])
+            )
+            .with_long_strings(long_string=self.given.get("long string", ""))
         )
 
     def _output_swap(self, content):
-        return '\n'.join([
-            line.rstrip() for line in content
-                .replace(self.path.gen / "working", "/path/to/code")
+        return "\n".join(
+            [
+                line.rstrip()
+                for line in content.replace(self.path.gen / "working", "/path/to/code")
                 .replace(self.path.share, "/path/to/share")
                 .replace(colorama.Fore.RED, "[[ RED ]]")
                 .replace(colorama.Style.BRIGHT, "[[ BRIGHT ]]")
                 .replace(colorama.Style.DIM, "[[ DIM ]]")
                 .replace(colorama.Fore.RESET, "[[ RESET FORE ]]")
                 .replace(colorama.Style.RESET_ALL, "[[ RESET ALL ]]")
-                .split('\n')
-        ])
+                .split("\n")
+            ]
+        )
 
     @no_stacktrace_for(HitchRunPyException)
     def run_code(self):
@@ -96,18 +90,23 @@ class Engine(BaseEngine):
                 raise
 
     def file_in_working_dir_contains(self, filename, contents):
-        assert self.path.working_dir.joinpath(filename).bytes().decode('utf8') == contents
+        assert (
+            self.path.working_dir.joinpath(filename).bytes().decode("utf8") == contents
+        )
 
     def file_in_written_by_code_contains(self, filename, contents):
-        assert self.path.state.joinpath(filename).bytes().decode('utf8') == contents
+        assert self.path.state.joinpath(filename).bytes().decode("utf8") == contents
 
     def pause(self, message="Pause"):
         import IPython
+
         IPython.embed()
 
-    def on_success(self):
-        if self.settings.get("rewrite"):
-            self.new_story.save()
+
+def _storybook(settings):
+    return StoryCollection(
+        pathquery(DIR.key).ext("story"), Engine(DIR, settings)
+    )
 
 
 @expected(HitchStoryException)
@@ -115,9 +114,7 @@ def bdd(*words):
     """
     Run test with words.
     """
-    StoryCollection(
-        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": False})
-    ).shortcut(*words).play()
+    _storybook({"rewrite": False}).shortcut(*words).play()
 
 
 @expected(HitchStoryException)
@@ -159,54 +156,40 @@ def rewriteall():
     ).ordered_by_name().play().report()
 
 
+def reformat():
+    """
+    Reformat using black and then relint.
+    """
+    hitchpylibrarytoolkit.reformat(DIR.project, "hitchrunpy")
+
+
 def lint():
     """
-    Lint all code.
+    Lint project code and hitch code.
     """
-    python("-m", "flake8")(
-        DIR.project.joinpath("hitchrunpy"),
-        "--max-line-length=100",
-        "--exclude=__init__.py",
-    ).run()
-    python("-m", "flake8")(
-        DIR.key.joinpath("key.py"),
-        "--max-line-length=100",
-        "--exclude=__init__.py",
-    ).run()
-    print("Lint success!")
+    hitchpylibrarytoolkit.lint(DIR.project, "hitchrunpy")
 
 
 def deploy(version):
     """
     Deploy to pypi as specified version.
     """
-    NAME = "hitchrunpy"
-    git = Command("git").in_dir(DIR.project)
-    version_file = DIR.project.joinpath("VERSION")
-    old_version = version_file.bytes().decode('utf8')
-    if version_file.bytes().decode("utf8") != version:
-        DIR.project.joinpath("VERSION").write_text(version)
-        git("add", "VERSION").run()
-        git("commit", "-m", "RELEASE: Version {0} -> {1}".format(
-            old_version,
-            version
-        )).run()
-        git("push").run()
-        git("tag", "-a", version, "-m", "Version {0}".format(version)).run()
-        git("push", "origin", version).run()
-    else:
-        git("push").run()
+    hitchpylibrarytoolkit.deploy(DIR.project, "hitchrunpy", version)
 
-    # Set __version__ variable in __init__.py, build sdist and put it back
-    initpy = DIR.project.joinpath(NAME, "__init__.py")
-    original_initpy_contents = initpy.bytes().decode('utf8')
-    initpy.write_text(
-        original_initpy_contents.replace("DEVELOPMENT_VERSION", version)
+
+@expected(dirtemplate.exceptions.DirTemplateException)
+def docgen():
+    """
+    Build documentation.
+    """
+    hitchpylibrarytoolkit.docgen(_storybook({}), DIR.project, DIR.key, DIR.gen)
+
+
+@expected(dirtemplate.exceptions.DirTemplateException)
+def readmegen():
+    """
+    Build documentation.
+    """
+    hitchpylibrarytoolkit.readmegen(
+        _storybook({}), DIR.project, DIR.key, DIR.gen, "hitchrunpy"
     )
-    python("setup.py", "sdist").in_dir(DIR.project).run()
-    initpy.write_text(original_initpy_contents)
-
-    # Upload to pypi
-    python(
-        "-m", "twine", "upload", "dist/{0}-{1}.tar.gz".format(NAME, version)
-    ).in_dir(DIR.project).run()

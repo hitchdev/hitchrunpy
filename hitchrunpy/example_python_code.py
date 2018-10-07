@@ -15,12 +15,14 @@ HITCHRUNPY_TEMPLATE_DIR = Path(__file__).dirname().abspath().joinpath("templates
 class ExceptionRaised(object):
     def __init__(self, error_details):
         self._error_details = error_details
-        self.exception_type = error_details['exception_type']
-        self.message = error_details['exception_string']
+        self.exception_type = error_details["exception_type"]
+        self.message = error_details["exception_string"]
 
     @property
     def formatted_stacktrace(self):
-        return PrettyStackTemplate().to_console().from_stacktrace_data(self._error_details)
+        return (
+            PrettyStackTemplate().to_console().from_stacktrace_data(self._error_details)
+        )
 
 
 class Result(object):
@@ -30,22 +32,17 @@ class Result(object):
 
     def final_output_was(self, output):
         if output != self.output:
-            raise exceptions.OutputAppearsDifferent((
-                'EXPECTED:\n'
-                '{0}\n'
-                '\n'
-                'ACTUAL:\n'
-                '{1}'
-            ).format(
-                output,
-                self.output,
-            ))
+            raise exceptions.OutputAppearsDifferent(
+                ("EXPECTED:\n" "{0}\n" "\n" "ACTUAL:\n" "{1}").format(
+                    output, self.output
+                )
+            )
 
     def exception_was_raised(self, exception_type=None, text=None):
         if self.exception is None:
             raise exceptions.ExpectedExceptionButNoExceptionOccurred(
                 "Expected exception '{0}', but no exception occurred.".format(
-                    exception_type,
+                    exception_type
                 )
             )
 
@@ -63,10 +60,11 @@ class Result(object):
                     exception_type,
                     self.exception.message,
                     text,
-                    ''.join(difflib.ndiff(
-                        self.exception.message.splitlines(1),
-                        text.splitlines(1)
-                    )),
+                    "".join(
+                        difflib.ndiff(
+                            self.exception.message.splitlines(1), text.splitlines(1)
+                        )
+                    ),
                 )
 
 
@@ -94,8 +92,8 @@ class ExamplePythonCode(object):
         self._working_dir = working_dir
         self._terminal_size = (80, 24)
 
-        self._setup_code = u''
-        self._code = u''
+        self._setup_code = u""
+        self._code = u""
         self._expect_exceptions = False
         self._long_strings = None
         self._cprofile_data = None
@@ -154,22 +152,25 @@ class ExamplePythonCode(object):
         env = environment.Environment()
         env.loader = FileSystemLoader(HITCHRUNPY_TEMPLATE_DIR)
 
-        example_python_code.write_text(env.get_template("base.jinja2").render(
-            long_strings=self._long_strings,
-            setup_code=self._setup_code,
-            cprofile_data=self._cprofile_data,
-            code=self._code,
-            error_path=error_path,
-        ))
+        example_python_code.write_text(
+            env.get_template("base.jinja2").render(
+                long_strings=self._long_strings,
+                setup_code=self._setup_code,
+                cprofile_data=self._cprofile_data,
+                code=self._code,
+                error_path=error_path,
+            )
+        )
 
-        pycommand = Command(self._python_bin, "examplepythoncode.py")\
-            .with_env(**self._environment_variables)\
+        pycommand = (
+            Command(self._python_bin, "examplepythoncode.py")
+            .with_env(**self._environment_variables)
             .in_dir(working_dir)
+        )
 
         try:
             return RunningCode(
-                ICommand(pycommand).screensize(*self._terminal_size).run(),
-                error_path
+                ICommand(pycommand).screensize(*self._terminal_size).run(), error_path
             )
         except ICommandError as command_error:
             raise exceptions.ErrorRunningCode(
@@ -188,33 +189,37 @@ class ExamplePythonCode(object):
         env = environment.Environment()
         env.loader = FileSystemLoader(HITCHRUNPY_TEMPLATE_DIR)
 
-        example_python_code.write_text(env.get_template("base.jinja2").render(
-            long_strings=self._long_strings,
-            setup_code=self._setup_code,
-            cprofile_data=self._cprofile_data,
-            code=self._code,
-            error_path=error_path,
-        ))
+        example_python_code.write_text(
+            env.get_template("base.jinja2").render(
+                long_strings=self._long_strings,
+                setup_code=self._setup_code,
+                cprofile_data=self._cprofile_data,
+                code=self._code,
+                error_path=error_path,
+            )
+        )
 
-        pycommand = Command(self._python_bin, "examplepythoncode.py")\
-            .with_env(**self._environment_variables)\
+        pycommand = (
+            Command(self._python_bin, "examplepythoncode.py")
+            .with_env(**self._environment_variables)
             .in_dir(working_dir)
+        )
 
         icommand = ICommand(pycommand).screensize(*self._terminal_size)
 
         if self._timeout is not None:
             icommand = icommand.with_timeout(self._timeout)
             import q
+
             q(self._timeout)
 
         try:
-            finished_process = icommand.run()\
-                                       .wait_for_successful_exit(timeout=self._timeout)
+            finished_process = icommand.run().wait_for_successful_exit(
+                timeout=self._timeout
+            )
             command_output = finished_process.screenshot.strip()
         except IProcessTimeout as timeout_error:
-            raise exceptions.PythonTimeout(
-                str(timeout_error)
-            )
+            raise exceptions.PythonTimeout(str(timeout_error))
         except ICommandError as command_error:
             raise exceptions.ErrorRunningCode(
                 "Error running code. Output:\n\n{0}".format(command_error.screenshot)
@@ -223,13 +228,15 @@ class ExamplePythonCode(object):
         exception_raised = None
 
         if error_path.exists():
-            error_details = json.loads(error_path.bytes().decode('utf8'))
+            error_details = json.loads(error_path.bytes().decode("utf8"))
 
-            if error_details['event'] == "exception":
+            if error_details["event"] == "exception":
                 exception_raised = ExceptionRaised(error_details)
             else:
                 raise TypeError(
-                    "Invalid error event type {0} reported.".format(error_details['event'])
+                    "Invalid error event type {0} reported.".format(
+                        error_details["event"]
+                    )
                 )
 
             if not self._expect_exceptions:
