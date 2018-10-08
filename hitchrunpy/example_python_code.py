@@ -79,11 +79,7 @@ class RunningCode(object):
 
     @property
     def finished(self):
-        try:
-            self._iprocess.psutil
-            return False
-        except Exception:
-            return True
+        return not self._iprocess.running
 
 
 class ExamplePythonCode(object):

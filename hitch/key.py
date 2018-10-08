@@ -1,7 +1,7 @@
-from hitchstory import StoryCollection, GivenDefinition, GivenProperty
+from hitchstory import StoryCollection, GivenDefinition, GivenProperty, validate
 from hitchstory import BaseEngine, no_stacktrace_for, HitchStoryException
 from hitchrun import expected
-from strictyaml import Str
+from strictyaml import Str, Map, Optional
 from pathquery import pathquery
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
@@ -43,20 +43,7 @@ class Engine(BaseEngine):
             "hitchrunpy", self.path, self.given["runner python version"]
         ).bin.python
 
-        self.example_python_code = (
-            ExamplePythonCode(self.python, self.path.state)
-            .with_code(self.given.get("code", ""))
-            .with_setup_code(
-                self.given.get("setup")
-                .replace("/path/to/working_dir", self.path.working_dir)
-                .replace("/path/to/share_dir/", self.path.share)
-                .replace("/path/to/build_dir/", self.path.state)
-                .replace("{{ pyver }}", self.given["working python version"])
-            )
-            .with_long_strings(long_string=self.given.get("long string", ""))
-        )
-
-    def _output_swap(self, content):
+    def _story_friendly_output(self, content):
         return "\n".join(
             [
                 line.rstrip()
@@ -71,31 +58,87 @@ class Engine(BaseEngine):
             ]
         )
 
-    @no_stacktrace_for(HitchRunPyException)
-    def run_code(self):
-        self.example_python_code.run()
+    def _setup_code(self):
+        return (
+            self.given.get("setup", "")
+            .replace("/path/to/working_dir", self.path.working_dir)
+            .replace("/path/to/share_dir/", self.path.share)
+            .replace("/path/to/build_dir/", self.path.state)
+            .replace("{{ pyver }}", self.given["working python version"])
+        )
 
     @no_stacktrace_for(AssertionError)
     @no_stacktrace_for(HitchRunPyException)
-    def raises_exception(self, message=None, exception_type=None):
-        try:
-            result = self.example_python_code.expect_exceptions().run()
-            result.exception_was_raised(exception_type)
-            processed_message = self._output_swap(result.exception.message)
-            Templex(processed_message).assert_match(message)
-        except AssertionError:
-            if self.settings.get("rewrite"):
-                self.current_step.update(message=processed_message)
-            else:
-                raise
+    @validate(
+        code=Str(),
+        will_output=Str(),
+        raises=Map({Optional("type"): Str(), Optional("message"): Str()}),
+    )
+    def run(self, code, will_output=None, raises=None):
+        self.example_py_code = (
+            ExamplePythonCode(self.python, self.path.state)
+            .with_terminal_size(160, 100)
+            .with_setup_code(self._setup_code())
+            .with_long_strings(long_string=self.given.get("long string"))
+        )
+        to_run = self.example_py_code.with_code(code)
 
+        if self.settings.get("cprofile"):
+            to_run = to_run.with_cprofile(
+                self.path.profile.joinpath("{0}.dat".format(self.story.slug))
+            )
+
+        result = (
+            to_run.expect_exceptions().run() if raises is not None else to_run.run()
+        )
+
+        actual_output = self._story_friendly_output(result.output)
+
+        if will_output is not None:
+            try:
+                Templex(will_output).assert_match(actual_output)
+            except AssertionError:
+                if self.settings.get("rewrite"):
+                    self.current_step.update(**{"will output": actual_output})
+                else:
+                    raise
+
+        if raises is not None:
+            exception_type = raises.get("type")
+            message = raises.get("message")
+
+            try:
+                result = self.example_py_code.expect_exceptions().run()
+                result.exception_was_raised(exception_type)
+                exception_message = self._story_friendly_output(
+                    result.exception.message
+                )
+                Templex(exception_message).assert_match(message)
+            except AssertionError:
+                if self.settings.get("rewrite"):
+                    new_raises = raises.copy()
+                    new_raises["message"] = exception_message
+                    self.current_step.update(raises=new_raises)
+                else:
+                    raise
+
+    @no_stacktrace_for(AssertionError)
     def file_in_working_dir_contains(self, filename, contents):
         assert (
             self.path.working_dir.joinpath(filename).bytes().decode("utf8") == contents
         )
 
-    def file_in_written_by_code_contains(self, filename, contents):
-        assert self.path.state.joinpath(filename).bytes().decode("utf8") == contents
+    @no_stacktrace_for(AssertionError)
+    def file_written_by_code_contains(self, filename, contents):
+        try:
+            Templex(contents).assert_match(self.path.state.joinpath(filename).text())
+        except AssertionError:
+            if self.settings.get("rewrite"):
+                self.current_step.update(
+                    contents=self.path.state.joinpath(filename).text()
+                )
+            else:
+                raise
 
     def pause(self, message="Pause"):
         import IPython
@@ -104,9 +147,7 @@ class Engine(BaseEngine):
 
 
 def _storybook(settings):
-    return StoryCollection(
-        pathquery(DIR.key).ext("story"), Engine(DIR, settings)
-    )
+    return StoryCollection(pathquery(DIR.key).ext("story"), Engine(DIR, settings))
 
 
 @expected(HitchStoryException)
