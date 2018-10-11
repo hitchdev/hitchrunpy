@@ -1,4 +1,8 @@
 CProfile:
+  docs: cprofile
+  about: |
+    Code snippets run by hitchrunpy can be
+    profiled with cprofile.
   based on: hitchrunpy
   given:
     long string: |

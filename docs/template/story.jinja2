@@ -1,0 +1,50 @@
+{% if include_title %}
+---
+title: {{ story.name }}
+type: using
+---
+{% if story.info['experimental'] %}{% raw %}
+{{< warning title="Experimental" >}}
+This feature is in alpha. The API may change on a minor version increment.
+{{< /warning >}}
+{% endraw %}{% endif %}
+{% endif %}
+
+{{ story.about }}
+
+{% if 'long_string' in story.given %}"long_string" is set to:
+
+```
+{{ story.given['long_string'] }}
+```
+{% endif %}
+
+{% if 'setup' in story.given %}
+```python
+{{ story.given['setup'] | replace("{{ pyver }}","3.7") }}
+```
+{%- endif %}
+
+{% if story.variations %}
+
+{% for variation in story.variations %}
+{{ variation.child_name }}:
+
+{% for step in variation.steps %}
+{% with step = step %}{% include "step.jinja2" %}{% endwith %}
+{% endfor %}
+{% endfor %}
+
+{% else %}
+
+{% for step in story.steps %}
+{% with step = step %}{% include "step.jinja2" %}{% endwith %}
+{% endfor %}
+
+{% endif %}
+
+{% if include_title %}
+{% raw %}{{< note title="Executable specification" >}}{% endraw %}
+Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/{{ story.filename.basename() }}">{{ story.filename.basename() }}</a>.
+{% raw %}{{< /note >}}{% endraw %}
+{% endif %}

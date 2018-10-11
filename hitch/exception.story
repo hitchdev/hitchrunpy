@@ -1,141 +1,146 @@
-Exception occurs as expected:
+Exceptions:
+  about: |
+    When python code snippets raise exceptions, those
+    can be expected by the code or unexpected.
+    
+    If unexpected they will raise an exception.
+  docs: exceptions
   based on: hitchrunpy
-  steps:
-  - Run:
-      code: |
-        result = pyrunner.with_code("""
+  variations:
+    Occurs as expected:
+      steps:
+      - Run:
+          code: |
+            result = pyrunner.with_code("""
 
-        class CustomException(Exception):
-            pass
+            class CustomException(Exception):
+                pass
 
-        raise CustomException('This should hâppen')
+            raise CustomException('This should hâppen')
 
-        """).expect_exceptions().run()
+            """).expect_exceptions().run()
 
-        result.exception_was_raised("__main__.CustomException", "This should hâppen")
+            result.exception_was_raised("__main__.CustomException")
 
-Expected exception was different:
-  based on: hitchrunpy
-  steps:
-  - Run:
-      code: |
-        result = pyrunner.with_code("""
+            assert result.exception.message == "This should hâppen"
+            assert result.exception.exception_type == "__main__.CustomException"
 
-        class AnotherCustomException(Exception):
-            pass
+    Different to expected exception:
+      steps:
+      - Run:
+          code: |
+            result = pyrunner.with_code("""
 
-        raise AnotherCustomException('This should happen')
+            class AnotherCustomException(Exception):
+                pass
 
-        """).expect_exceptions().run()
+            raise AnotherCustomException('This should happen')
 
-        result.exception_was_raised("__main__.CustomException", "This should hâppen")
-      raises:
-        type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
-        message: |-
-          Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
+            """).expect_exceptions().run()
 
-          [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
-            /path/to/code/examplepythoncode.py
+            result.exception_was_raised("__main__.CustomException")
+          raises:
+            type: hitchrunpy.exceptions.ExpectedExceptionWasDifferent
+            message: |-
+              Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
 
-
-                  67 :
-                  68 :
-              --> [[ BRIGHT ]]69[[ RESET ALL ]] :     run_example_code()
-                  70 : except Exception as error:
+              [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
+                /path/to/code/examplepythoncode.py
 
 
-
-          [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
-            /path/to/code/examplepythoncode.py
-
-
-                  63 :
-                  64 :
-              --> [[ BRIGHT ]]65[[ RESET ALL ]] :         runcode()
-                  66 :
+                      67 :
+                      68 :
+                  --> [[ BRIGHT ]]69[[ RESET ALL ]] :     run_example_code()
+                      70 : except Exception as error:
 
 
 
-          [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
-            /path/to/code/examplepythoncode.py
+              [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
+                /path/to/code/examplepythoncode.py
 
 
-                  58 :                             pass
-                  59 :
-              --> [[ BRIGHT ]]60[[ RESET ALL ]] :                         raise AnotherCustomException('This should happen')
-                  61 :
+                      63 :
+                      64 :
+                  --> [[ BRIGHT ]]65[[ RESET ALL ]] :         runcode()
+                      66 :
 
 
 
-          [[ RED ]][[ BRIGHT ]]__main__.AnotherCustomException[[ RESET ALL ]]
-            [[ DIM ]][[ RED ]]None[[ RESET ALL ]]
-          [[ RED ]]This should happen[[ RESET FORE ]]
-
-Expect exception with no details:
-  based on: hitchrunpy
-  steps:
-  - Run:
-      code: |
-        result = pyrunner.with_code("""
-
-        raise Exception(u"ân exception")
-
-        """).expect_exceptions().run()
-
-        result.exception_was_raised()
+              [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
+                /path/to/code/examplepythoncode.py
 
 
-Expected exception but no exception occurred:
-  based on: hitchrunpy
-  steps:
-  - Run:
-      code: |
-        result = pyrunner.with_code("""
-
-        pass
-
-        """).expect_exceptions().run()
-
-        result.exception_was_raised("__main__.CustomException", "This should hâppen")
-      raises:
-        type: hitchrunpy.exceptions.ExpectedExceptionButNoExceptionOccurred
-        message: |
-          Expected exception '__main__.CustomException', but no exception occurred.
+                      58 :                             pass
+                      59 :
+                  --> [[ BRIGHT ]]60[[ RESET ALL ]] :                         raise AnotherCustomException('This should happen')
+                      61 :
 
 
-Expected exception has different message:
-  based on: hitchrunpy
-  steps:
-  - Run:
-      code: |
-        result = pyrunner.with_code("""
 
-        class CustomException(Exception):
-            pass
+              [[ RED ]][[ BRIGHT ]]__main__.AnotherCustomException[[ RESET ALL ]]
+                [[ DIM ]][[ RED ]]None[[ RESET ALL ]]
+              [[ RED ]]This should happen[[ RESET FORE ]]
 
-        raise CustomException('This was not\\nthe expected messâge.')
+    Expect any kind of exception:
+      with:
+        working python version: 2.7.14
+      steps:
+      - Run:
+          code: |
+            result = pyrunner.with_code("""
 
-        """).expect_exceptions().run()
+            raise Exception(u"ân exception")
 
-        result.exception_was_raised("__main__.CustomException", 'This was\nthe expected messâge')
-      raises:
-        type: hitchrunpy.exceptions.ExpectedExceptionMessageWasDifferent
-        message: |-
-          Expected exception '__main__.CustomException' was raised, but message was different.
+            """).expect_exceptions().run()
 
-          ACTUAL:
-          This was not
-          the expected messâge.
+            result.exception_was_raised()
 
-          EXPECTED:
-          This was
-          the expected messâge
-          DIFF:
-          - This was not
-          ?         ----
-          + This was
-          - the expected messâge.?                     -
-          + the expected messâge
+
+    No exception occurs when expected:
+      steps:
+      - Run:
+          code: |
+            result = pyrunner.with_code("pass").expect_exceptions().run()
+
+            result.exception_was_raised("__main__.CustomException")
+          raises:
+            type: hitchrunpy.exceptions.ExpectedExceptionButNoExceptionOccurred
+            message: |
+              Expected exception '__main__.CustomException', but no exception occurred.
+
+
+    Expected raised but with different message:
+      steps:
+      - Run:
+          code: |
+            result = pyrunner.with_code("""
+
+            class CustomException(Exception):
+                pass
+
+            raise CustomException('This was not\\nthe expected messâge.')
+
+            """).expect_exceptions().run()
+
+            result.exception_was_raised("__main__.CustomException", 'This was\nthe expected messâge')
+          raises:
+            type: hitchrunpy.exceptions.ExpectedExceptionMessageWasDifferent
+            message: |-
+              Expected exception '__main__.CustomException' was raised, but message was different.
+
+              ACTUAL:
+              This was not
+              the expected messâge.
+
+              EXPECTED:
+              This was
+              the expected messâge
+              DIFF:
+              - This was not
+              ?         ----
+              + This was
+              - the expected messâge.?                     -
+              + the expected messâge
 
 
 

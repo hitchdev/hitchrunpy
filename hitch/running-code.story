@@ -1,4 +1,12 @@
 Interact with running code:
+  docs: interact-with-running-code
+  about: |
+    If you need to test code asynchronously or interact
+    with it in a terminal window, you can use .running_code()
+    to get a RunningCode object.
+
+    From the RunningCode object you can use .iprocess to
+    get an [icommandlib iprocess object](https://hitchdev.com/icommandlib/).
   based on: hitchrunpy
   given:
     long string: |

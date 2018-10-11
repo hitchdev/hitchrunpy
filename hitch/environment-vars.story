@@ -1,4 +1,8 @@
 Run with environment variables:
+  about: |
+    Environment variables within the running python
+    snippets can be overridden or set by using .with_env.
+  docs: environment-vars
   based on: hitchrunpy
   steps:
   - Run:

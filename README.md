@@ -1,12 +1,4 @@
-{% if readme -%}
 # HitchRunPy
-{%- else -%}
----
-title: HitchRunPy
----
-
-{% raw %}{{< github-stars user="hitchdev" project="hitchrunpy" >}}{% endraw %}
-{% endif %}
 
 HitchRunPy is a tool to run, test and profile snippets of python code.
 
@@ -48,9 +40,15 @@ $ pip install hitchstory
 
 ## Using HitchRunPy
 
-{% for dirfile in subdir("using/alpha/").is_not_dir() - subdir("using/alpha/").named("index.md") -%}
-- [{{ title(dirfile) }}](using/alpha/{{ dirfile.namebase }})
-{% endfor %}
+- [Error occurred](https://hitchdev.com/hitchrunpy/using/alpha/syntax-errors)
+- [Exceptions](https://hitchdev.com/hitchrunpy/using/alpha/exceptions)
+- [Run with environment variables](https://hitchdev.com/hitchrunpy/using/alpha/environment-vars)
+- [Feed string variables to code](https://hitchdev.com/hitchrunpy/using/alpha/variables)
+- [CProfile](https://hitchdev.com/hitchrunpy/using/alpha/cprofile)
+- [Timeout](https://hitchdev.com/hitchrunpy/using/alpha/timeout)
+- [Interact with running code](https://hitchdev.com/hitchrunpy/using/alpha/interact-with-running-code)
+- [Setup code](https://hitchdev.com/hitchrunpy/using/alpha/setup-code)
+
 
 
 ## Why use HitchRunPy?

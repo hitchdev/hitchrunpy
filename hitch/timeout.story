@@ -1,4 +1,9 @@
 Timeout:
+  about: |
+    If the python code snippets you are running
+    encounter a very very long loop or infinite, you
+    can get it to time out.
+  docs: timeout
   based on: hitchrunpy
   given:
     long string: |

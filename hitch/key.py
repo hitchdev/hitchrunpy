@@ -1,7 +1,8 @@
 from hitchstory import StoryCollection, GivenDefinition, GivenProperty, validate
+from hitchstory import InfoDefinition, InfoProperty
 from hitchstory import BaseEngine, no_stacktrace_for, HitchStoryException
 from hitchrun import expected
-from strictyaml import Str, Map, Optional
+from strictyaml import Str, Map, Enum, Optional
 from pathquery import pathquery
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
@@ -20,6 +21,11 @@ class Engine(BaseEngine):
         working_python_version=GivenProperty(Str()),
         setup=GivenProperty(Str()),
         code=GivenProperty(Str()),
+    )
+
+    info_definition = InfoDefinition(
+        status=InfoProperty(schema=Enum(["experimental", "stable"])),
+        docs=InfoProperty(schema=Str()),
     )
 
     def __init__(self, paths, settings):
@@ -80,6 +86,7 @@ class Engine(BaseEngine):
             .with_terminal_size(160, 100)
             .with_setup_code(self._setup_code())
             .with_long_strings(long_string=self.given.get("long string"))
+            .with_timeout(10.0)
         )
         to_run = self.example_py_code.with_code(code)
 

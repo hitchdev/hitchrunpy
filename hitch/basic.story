@@ -1,33 +1,5 @@
-Run code until completion:
-  based on: hitchrunpy
-  steps:
-  - Run:
-      code: |
-        pyrunner.with_code((
-            'with open("examplefile", "w") as handle:'
-            '     handle.write("exampletext")'
-        )).run()
-  - File in working dir contains:
-      filename: examplefile
-      contents: exampletext
-
-
-Long strings:
-  based on: hitchrunpy
-  steps:
-  - Run:
-      code: |
-        long_string = u"â long string"
-
-        pyrunner.with_code((
-            'with open("examplefile", "w") as handle:'
-            '     handle.write(long_string)'
-        )).with_long_strings(long_string=long_string).run()
-  - File in working dir contains:
-      filename: examplefile
-      contents: â long string
-
 Error occurred:
+  docs: syntax-errors
   based on: hitchrunpy
   steps:
   - Run:
@@ -102,6 +74,7 @@ Unexpected exception:
           [[ RED ]]This should not hâppen[[ RESET FORE ]]
 
 Setup code:
+  docs: setup-code
   based on: hitchrunpy
   steps:
   - Run:

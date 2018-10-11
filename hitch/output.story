@@ -1,32 +1,13 @@
-Print message appears the same:
+Output from finished code:
   based on: hitchrunpy
   steps:
   - Run: |
       result = pyrunner.with_code('''print("hello")''').run()
 
-      result.final_output_was('hello')
-
-Print message appears differently:
-  based on: hitchrunpy
-  given:
-    code: |
-  steps:
-  - Run:
-      code: |
-        result = pyrunner.with_code('''print("goodbye")''').run()
-
-        result.final_output_was('hello')
-      raises:
-        type: hitchrunpy.exceptions.OutputAppearsDifferent
-        message: |
-          EXPECTED:
-          hello
-
-          ACTUAL:
-          goodbye
+      assert result.output == "hello"
 
 
-Larger screen:
+Output from larger terminal size:
   based on: hitchrunpy
   steps:
   - Run:
@@ -42,4 +23,4 @@ Larger screen:
           .with_terminal_size(160, 24)\
           .run()
 
-        result.final_output_was(long_string)
+        assert result.output == long_string
