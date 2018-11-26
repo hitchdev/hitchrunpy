@@ -83,9 +83,11 @@ class RunningCode(object):
 
 
 class ExamplePythonCode(object):
-    def __init__(self, python_bin, working_dir):
+    def __init__(self, python_bin, holding_dir):
         self._python_bin = python_bin
-        self._working_dir = working_dir
+        self._holding_dir = Path(holding_dir).abspath()
+        assert self._holding_dir.isdir()
+
         self._terminal_size = (80, 24)
 
         self._setup_code = u""
@@ -121,6 +123,11 @@ class ExamplePythonCode(object):
         new_expyc._expect_exceptions = True
         return new_expyc
 
+    def with_strings(self, **strings):
+        new_expyc = copy(self)
+        new_expyc._long_strings = strings
+        return new_expyc
+
     def with_long_strings(self, **strings):
         new_expyc = copy(self)
         new_expyc._long_strings = strings
@@ -140,7 +147,11 @@ class ExamplePythonCode(object):
         """
         Start the code and return a RunningCode object.
         """
-        working_dir = Path(self._working_dir)
+        working_dir = self._holding_dir / "working"
+
+        if working_dir.exists():
+            working_dir.rmtree()
+        working_dir.mkdir()
 
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
@@ -177,7 +188,11 @@ class ExamplePythonCode(object):
         """
         Run the code.
         """
-        working_dir = Path(self._working_dir)
+        working_dir = self._holding_dir / "working"
+
+        if working_dir.exists():
+            working_dir.rmtree()
+        working_dir.mkdir()
 
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
@@ -205,9 +220,6 @@ class ExamplePythonCode(object):
 
         if self._timeout is not None:
             icommand = icommand.with_timeout(self._timeout)
-            import q
-
-            q(self._timeout)
 
         try:
             finished_process = icommand.run().wait_for_successful_exit(

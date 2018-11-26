@@ -29,50 +29,21 @@ Unexpected exception:
         """).run()
       raises:
         type: hitchrunpy.exceptions.UnexpectedException
-        message: |-
-          Unexpected exception 'builtins.Exception' raised.
-
-          This is ân explanation for what happened printed to stdout
-
-          Stacktrace:
-
-          [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
-            /path/to/code/examplepythoncode.py
-
-
-                  66 :
-                  67 :
-              --> [[ BRIGHT ]]68[[ RESET ALL ]] :     run_example_code()
-                  69 : except Exception as error:
-
-
-
-          [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
-            /path/to/code/examplepythoncode.py
-
-
-                  62 :
-                  63 :
-              --> [[ BRIGHT ]]64[[ RESET ALL ]] :         runcode()
-                  65 :
-
-
-
-          [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
-            /path/to/code/examplepythoncode.py
-
-
-                  57 :                         print('This is ân explanation for what happened printed to stdout')
-                  58 :
-              --> [[ BRIGHT ]]59[[ RESET ALL ]] :                         raise Exception('This should not hâppen')
-                  60 :
-
-
-
-          [[ RED ]][[ BRIGHT ]]builtins.Exception[[ RESET ALL ]]
-            [[ DIM ]][[ RED ]]Common base class for all non-exit exceptions.[[ RESET ALL ]]
-          [[ RED ]]This should not hâppen[[ RESET FORE ]]
-
+        message: "Unexpected exception 'builtins.Exception' raised.\n\nThis is ân\
+          \ explanation for what happened printed to stdout\n\nStacktrace:\n\n[0]:\
+          \ function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'\n  /path/to/code/working/examplepythoncode.py\n\
+          \n\n        66 :\n        67 :\n    --> [[ BRIGHT ]]68[[ RESET ALL ]] :\
+          \     run_example_code()\n        69 : except Exception as error:\n\n\n\n\
+          [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'\n  /path/to/code/working/examplepythoncode.py\n\
+          \n\n        62 :\n        63 :\n    --> [[ BRIGHT ]]64[[ RESET ALL ]] :\
+          \         runcode()\n        65 :\n\n\n\n[2]: function '[[ BRIGHT ]]runcode[[\
+          \ RESET ALL ]]'\n  /path/to/code/working/examplepythoncode.py\n\n\n    \
+          \    57 :                         print('This is ân explanation for what\
+          \ happened printed to stdout')\n        58 :\n    --> [[ BRIGHT ]]59[[ RESET\
+          \ ALL ]] :                         raise Exception('This should not hâppen')\n\
+          \        60 :\n\n\n\n[[ RED ]][[ BRIGHT ]]builtins.Exception[[ RESET ALL\
+          \ ]]\n  [[ DIM ]][[ RED ]]Common base class for all non-exit exceptions.[[\
+          \ RESET ALL ]]\n[[ RED ]]This should not hâppen[[ RESET FORE ]]"
 Setup code:
   docs: setup-code
   based on: hitchrunpy
@@ -85,5 +56,5 @@ Setup code:
         )).with_setup_code("exampletext = 'exampletext'")\
           .run()
   - File in working dir contains:
-      filename: examplefile
+      filename: working/examplefile
       contents: exampletext

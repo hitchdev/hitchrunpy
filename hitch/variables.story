@@ -7,12 +7,12 @@ Feed string variables to code:
   steps:
   - Run:
       code: |
-        long_string = u"â long string"
+        some_string = u"â string of some kind"
 
         pyrunner.with_code((
             'with open("examplefile", "w") as handle:'
-            '     handle.write(long_string)'
-        )).with_long_strings(long_string=long_string).run()
+            '     handle.write(some_string)'
+        )).with_strings(some_string=some_string).run()
   - File in working dir contains:
-      filename: examplefile
-      contents: â long string
+      filename: working/examplefile
+      contents: â string of some kind
