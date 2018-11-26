@@ -17,7 +17,8 @@ def read(*parts):
 setup(name="hitchrunpy",
       version=read('VERSION').replace('\n', ''),
       description="Tools to run and interact with python code.",
-      long_description=read('README.rst'),
+      long_description=read('README.md'),
+      long_description_content_type="text/markdown",
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
