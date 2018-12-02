@@ -2,7 +2,7 @@ from hitchstory import StoryCollection, GivenDefinition, GivenProperty, validate
 from hitchstory import InfoDefinition, InfoProperty
 from hitchstory import BaseEngine, no_stacktrace_for, HitchStoryException
 from hitchrun import expected
-from strictyaml import Str, Map, Enum, Optional
+from strictyaml import Str, MapPattern, Map, Enum, Optional
 from pathquery import pathquery
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
@@ -21,6 +21,7 @@ class Engine(BaseEngine):
         working_python_version=GivenProperty(Str()),
         setup=GivenProperty(Str()),
         code=GivenProperty(Str()),
+        files=GivenProperty(MapPattern(Str(), Str())),
     )
 
     info_definition = InfoDefinition(
@@ -44,6 +45,9 @@ class Engine(BaseEngine):
         if self.path.working_dir.exists():
             self.path.working_dir.rmtree(ignore_errors=True)
         self.path.working_dir.mkdir()
+
+        for filepath, content in self.given.get("files", {}).items():
+            self.path.state.joinpath(filepath).write_text(content)
 
         self.python = hitchpylibrarytoolkit.project_build(
             "hitchrunpy", self.path, self.given["runner python version"]

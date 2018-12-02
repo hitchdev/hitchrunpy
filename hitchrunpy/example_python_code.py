@@ -97,6 +97,7 @@ class ExamplePythonCode(object):
         self._cprofile_data = None
         self._timeout = None
         self._environment_variables = {}
+        self._modules = None
 
     def with_code(self, code):
         new_expyc = copy(self)
@@ -141,6 +142,11 @@ class ExamplePythonCode(object):
     def with_timeout(self, timeout):
         new_expyc = copy(self)
         new_expyc._timeout = timeout
+        return new_expyc
+
+    def with_modules(self, *paths):
+        new_expyc = copy(self)
+        new_expyc._modules = paths
         return new_expyc
 
     def running_code(self):
@@ -193,6 +199,9 @@ class ExamplePythonCode(object):
         if working_dir.exists():
             working_dir.rmtree()
         working_dir.mkdir()
+
+        for module_path in self._modules:
+            Path(module_path).copy(working_dir / module_path)
 
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
