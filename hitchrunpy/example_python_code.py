@@ -200,8 +200,9 @@ class ExamplePythonCode(object):
             working_dir.rmtree()
         working_dir.mkdir()
 
-        for module_path in self._modules:
-            Path(module_path).copy(working_dir / module_path)
+        if self._modules is not None:
+            for module_path in self._modules:
+                Path(module_path).copy(working_dir / module_path)
 
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
