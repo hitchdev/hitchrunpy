@@ -97,21 +97,11 @@ class ExamplePythonCode(object):
         self._cprofile_data = None
         self._timeout = None
         self._environment_variables = {}
-        self._files = {}
         self._modules = None
 
     def with_code(self, code):
         new_expyc = copy(self)
         new_expyc._code = code
-        return new_expyc
-
-    def with_files(self, files):
-        assert isinstance(files, dict), "files must be dict of filenames and contents"
-        for filename, content in files.items():
-            assert isinstance(filename, str), "filenames must be strings"
-            assert isinstance(content, str), "file contents must be strings"
-        new_expyc = copy(self)
-        new_expyc._files = files
         return new_expyc
 
     def with_env(self, **environment_vars):
@@ -169,9 +159,6 @@ class ExamplePythonCode(object):
             working_dir.rmtree()
         working_dir.mkdir()
 
-        for filename, content in self._files.items():
-            working_dir.joinpath(filename).write_text(content)
-
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
 
@@ -216,9 +203,6 @@ class ExamplePythonCode(object):
         if self._modules is not None:
             for module_path in self._modules:
                 Path(module_path).copy(working_dir / module_path)
-
-        for filename, content in self._files.items():
-            working_dir.joinpath(filename).write_text(content)
 
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
