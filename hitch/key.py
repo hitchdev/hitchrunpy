@@ -47,7 +47,10 @@ class Engine(BaseEngine):
         self.path.working_dir.mkdir()
 
         for filepath, content in self.given.get("files", {}).items():
-            self.path.state.joinpath(filepath).write_text(content)
+            fullpath = self.path.state.joinpath(filepath)
+            if not fullpath.dirname().exists():
+                fullpath.dirname().makedirs()
+            fullpath.write_text(content)
 
         self.python = hitchpylibrarytoolkit.project_build(
             "hitchrunpy", self.path, self.given["runner python version"]
@@ -137,6 +140,12 @@ class Engine(BaseEngine):
     def file_in_working_dir_contains(self, filename, contents):
         assert (
             self.path.working_dir.joinpath(filename).bytes().decode("utf8") == contents
+        )
+
+    @no_stacktrace_for(AssertionError)
+    def file_in_dir_contains(self, filename, contents):
+        assert (
+            self.path.state.joinpath(filename).bytes().decode("utf8") == contents
         )
 
     @no_stacktrace_for(AssertionError)

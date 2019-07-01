@@ -7,14 +7,8 @@ Error occurred:
         pyrunner.with_code('''x =''').run()
       raises:
         type: hitchrunpy.exceptions.ErrorRunningCode
-        message: |-
-          Error running code. Output:
-
-            File "examplepythoncode.py", line 56
-              x =
-                ^
-          SyntaxError: invalid syntax
-
+        message: "Error running code. Output:\n\n  File \"/path/to/code/working/examplepythoncode.py\"\
+          , line 56\n    x =\n      ^\nSyntaxError: invalid syntax"
 Unexpected exception:
   based on: hitchrunpy
   steps:

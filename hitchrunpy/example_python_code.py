@@ -84,7 +84,7 @@ class RunningCode(object):
 
 class ExamplePythonCode(object):
     def __init__(self, python_bin, holding_dir):
-        self._python_bin = python_bin
+        self._python_bin = Path(python_bin).abspath()
         self._holding_dir = Path(holding_dir).abspath()
         assert self._holding_dir.isdir()
 
@@ -98,10 +98,18 @@ class ExamplePythonCode(object):
         self._timeout = None
         self._environment_variables = {}
         self._modules = None
+        self._in_directory = None
 
     def with_code(self, code):
         new_expyc = copy(self)
         new_expyc._code = code
+        return new_expyc
+
+    def in_dir(self, directory):
+        new_expyc = copy(self)
+        new_expyc._in_directory = Path(directory).abspath()
+        assert new_expyc._in_directory.exists(), "in_dir directory must exist"
+        assert new_expyc._in_directory.isdir(), "in_dir directory must be directory"
         return new_expyc
 
     def with_env(self, **environment_vars):
@@ -153,7 +161,7 @@ class ExamplePythonCode(object):
         """
         Start the code and return a RunningCode object.
         """
-        working_dir = self._holding_dir / "working"
+        working_dir = self._holding_dir.joinpath("working").abspath()
 
         if working_dir.exists():
             working_dir.rmtree()
@@ -176,9 +184,9 @@ class ExamplePythonCode(object):
         )
 
         pycommand = (
-            Command(self._python_bin, "examplepythoncode.py")
+            Command(self._python_bin, working_dir / "examplepythoncode.py")
             .with_env(**self._environment_variables)
-            .in_dir(working_dir)
+            .in_dir(working_dir if self._in_directory is None else self._in_directory)
         )
 
         try:
@@ -221,9 +229,9 @@ class ExamplePythonCode(object):
         )
 
         pycommand = (
-            Command(self._python_bin, "examplepythoncode.py")
+            Command(self._python_bin, working_dir / "examplepythoncode.py")
             .with_env(**self._environment_variables)
-            .in_dir(working_dir)
+            .in_dir(working_dir if self._in_directory is None else self._in_directory)
         )
 
         icommand = ICommand(pycommand).screensize(*self._terminal_size)
