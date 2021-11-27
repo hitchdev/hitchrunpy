@@ -1,4 +1,9 @@
-# HitchRunPy
+---
+title: HitchRunPy
+---
+
+{{< github-stars user="hitchdev" project="hitchrunpy" >}}
+
 
 HitchRunPy is a tool to run, test and profile snippets of python code.
 
@@ -40,14 +45,14 @@ $ pip install hitchstory
 
 ## Using HitchRunPy
 
-- [Run with environment variables](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Timeout](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Error occurred](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Setup code](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [CProfile](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Exceptions](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Interact with running code](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Use modules](https://hitchdev.com/hitchrunpy/using/alpha/)
+- [Run with environment variables](using/alpha/)
+- [Timeout](using/alpha/)
+- [Error occurred](using/alpha/)
+- [Setup code](using/alpha/)
+- [CProfile](using/alpha/)
+- [Exceptions](using/alpha/)
+- [Interact with running code](using/alpha/)
+- [Use modules](using/alpha/)
 
 
 

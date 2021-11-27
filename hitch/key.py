@@ -12,6 +12,12 @@ import dirtemplate
 import colorama
 
 
+toolkit = hitchpylibrarytoolkit.ProjectToolkit(
+    "hitchrunpy",
+    DIR,
+)
+
+
 class Engine(BaseEngine):
     """Python engine for running tests."""
 
@@ -144,9 +150,7 @@ class Engine(BaseEngine):
 
     @no_stacktrace_for(AssertionError)
     def file_in_dir_contains(self, filename, contents):
-        assert (
-            self.path.state.joinpath(filename).bytes().decode("utf8") == contents
-        )
+        assert self.path.state.joinpath(filename).bytes().decode("utf8") == contents
 
     @no_stacktrace_for(AssertionError)
     def file_written_by_code_contains(self, filename, contents):
@@ -221,21 +225,21 @@ def reformat():
     """
     Reformat using black and then relint.
     """
-    hitchpylibrarytoolkit.reformat(DIR.project, "hitchrunpy")
+    toolkit.reformat()
 
 
 def lint():
     """
     Lint project code and hitch code.
     """
-    hitchpylibrarytoolkit.lint(DIR.project, "hitchrunpy")
+    toolkit.lint(exclude=["__init__.py"])
 
 
 def deploy(version):
     """
     Deploy to pypi as specified version.
     """
-    hitchpylibrarytoolkit.deploy(DIR.project, "hitchrunpy", version)
+    hitchpylibrarytoolkit.deploy(version)
 
 
 @expected(dirtemplate.exceptions.DirTemplateException)
@@ -243,7 +247,7 @@ def docgen():
     """
     Build documentation.
     """
-    hitchpylibrarytoolkit.docgen(_storybook({}), DIR.project, DIR.key, DIR.gen)
+    toolkit.docgen(Engine(DIR, {}))
 
 
 @expected(dirtemplate.exceptions.DirTemplateException)
@@ -251,6 +255,4 @@ def readmegen():
     """
     Build documentation.
     """
-    hitchpylibrarytoolkit.readmegen(
-        _storybook({}), DIR.project, DIR.key, DIR.gen, "hitchrunpy"
-    )
+    toolkit.readmegen(Engine(DIR, {}))

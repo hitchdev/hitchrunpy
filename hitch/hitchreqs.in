@@ -1,2 +1,3 @@
-hitchpylibrarytoolkit>=0.2.4
-hitchrun
+hitchrun>=0.4.0
+hitchpylibrarytoolkit>=0.5.1
+
