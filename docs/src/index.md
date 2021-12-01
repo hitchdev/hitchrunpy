@@ -5,7 +5,11 @@
 title: HitchRunPy
 ---
 
-{% raw %}{{< github-stars user="hitchdev" project="hitchrunpy" >}}{% endraw %}
+{% raw %}
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/hitchdev/hitchrunpy?style=social"> 
+<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/hitchrunpy">
+{% endraw %}
+
 {% endif %}
 
 HitchRunPy is a tool to run, test and profile snippets of python code.

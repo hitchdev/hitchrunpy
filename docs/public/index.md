@@ -2,7 +2,11 @@
 title: HitchRunPy
 ---
 
-{{< github-stars user="hitchdev" project="hitchrunpy" >}}
+
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/hitchdev/hitchrunpy?style=social"> 
+<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/hitchrunpy">
+
+
 
 
 HitchRunPy is a tool to run, test and profile snippets of python code.

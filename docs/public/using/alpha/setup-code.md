@@ -1,7 +1,6 @@
 
 ---
 title: Setup code
-type: using
 ---
 
 
@@ -64,6 +63,10 @@ exampletext
 
 
 
-{{< note title="Executable specification" >}}
-Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/basic.story">basic.story</a>.
-{{< /note >}}
+
+!!! note "Executable specification"
+
+    Documentation automatically generated from 
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/basic.story">basic.story</a>
+    storytests.
+

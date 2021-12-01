@@ -1,7 +1,6 @@
 
 ---
 title: Timeout
-type: using
 ---
 
 
@@ -66,6 +65,10 @@ Timed out waiting for exit.
 
 
 
-{{< note title="Executable specification" >}}
-Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/timeout.story">timeout.story</a>.
-{{< /note >}}
+
+!!! note "Executable specification"
+
+    Documentation automatically generated from 
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/timeout.story">timeout.story</a>
+    storytests.
+

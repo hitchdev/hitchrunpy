@@ -1,7 +1,6 @@
 
 ---
 title: Exceptions
-type: using
 ---
 
 
@@ -227,6 +226,10 @@ DIFF:
 
 
 
-{{< note title="Executable specification" >}}
-Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/exception.story">exception.story</a>.
-{{< /note >}}
+
+!!! note "Executable specification"
+
+    Documentation automatically generated from 
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/exception.story">exception.story</a>
+    storytests.
+

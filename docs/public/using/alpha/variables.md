@@ -1,7 +1,6 @@
 
 ---
 title: Use modules
-type: using
 ---
 
 
@@ -67,6 +66,10 @@ Then the file "working/examplefile" in the working dir will contain:
 
 
 
-{{< note title="Executable specification" >}}
-Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/with-modules.story">with-modules.story</a>.
-{{< /note >}}
+
+!!! note "Executable specification"
+
+    Documentation automatically generated from 
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/with-modules.story">with-modules.story</a>
+    storytests.
+

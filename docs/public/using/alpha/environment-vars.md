@@ -1,7 +1,6 @@
 
 ---
 title: Run with environment variables
-type: using
 ---
 
 
@@ -67,6 +66,10 @@ myenvironmentvar
 
 
 
-{{< note title="Executable specification" >}}
-Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/environment-vars.story">environment-vars.story</a>.
-{{< /note >}}
+
+!!! note "Executable specification"
+
+    Documentation automatically generated from 
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/environment-vars.story">environment-vars.story</a>
+    storytests.
+

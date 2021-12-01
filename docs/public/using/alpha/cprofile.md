@@ -1,7 +1,6 @@
 
 ---
 title: CProfile
-type: using
 ---
 
 
@@ -68,6 +67,10 @@ data.calc_callees()
 
 
 
-{{< note title="Executable specification" >}}
-Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/cprofile.story">cprofile.story</a>.
-{{< /note >}}
+
+!!! note "Executable specification"
+
+    Documentation automatically generated from 
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/cprofile.story">cprofile.story</a>
+    storytests.
+

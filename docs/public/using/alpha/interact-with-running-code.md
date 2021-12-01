@@ -1,7 +1,6 @@
 
 ---
 title: Interact with running code
-type: using
 ---
 
 
@@ -104,6 +103,10 @@ cts
 
 
 
-{{< note title="Executable specification" >}}
-Page automatically generated from <a href="https://github.com/hitchdev/hitchstory/blob/master/hitch/running-code.story">running-code.story</a>.
-{{< /note >}}
+
+!!! note "Executable specification"
+
+    Documentation automatically generated from 
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/running-code.story">running-code.story</a>
+    storytests.
+
