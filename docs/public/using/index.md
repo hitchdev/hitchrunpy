@@ -2,11 +2,11 @@
 title: Using HitchRunPy
 ---
 
-- [CProfile](using/alpha/cprofile)
-- [Run with environment variables](using/alpha/environment-vars)
-- [Exceptions](using/alpha/exceptions)
-- [Interact with running code](using/alpha/interact-with-running-code)
-- [Setup code](using/alpha/setup-code)
-- [Error occurred](using/alpha/syntax-errors)
-- [Timeout](using/alpha/timeout)
-- [Use modules](using/alpha/variables)
+- [CProfile](alpha/cprofile)
+- [Run with environment variables](alpha/environment-vars)
+- [Exceptions](alpha/exceptions)
+- [Interact with running code](alpha/interact-with-running-code)
+- [Setup code](alpha/setup-code)
+- [Error occurred](alpha/syntax-errors)
+- [Timeout](alpha/timeout)
+- [Use modules](alpha/variables)
