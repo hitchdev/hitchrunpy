@@ -39,10 +39,6 @@ ExamplePythonCode(
 
 ## Install
 
-Hitchstory is designed to be used mainly with hitchkey and hitchstory. [ TODO set up ]
-
-However, hitchrunpy can also be installed directly from pypi using pip.
-
 ```sh
 $ pip install hitchstory
 ```
