@@ -6,7 +6,7 @@ Interact with running code:
     to get a RunningCode object.
 
     From the RunningCode object you can use .iprocess to
-    get an [icommandlib iprocess object](https://hitchdev.com/icommandlib/).
+    get an [icommandlib iprocess object](https://github.com/crdoconnor/icommandlib).
   based on: hitchrunpy
   given:
     long string: |

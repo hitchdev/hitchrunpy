@@ -10,7 +10,7 @@ with it in a terminal window, you can use .running_code()
 to get a RunningCode object.
 
 From the RunningCode object you can use .iprocess to
-get an [icommandlib iprocess object](https://hitchdev.com/icommandlib/).
+get an [icommandlib iprocess object](https://github.com/crdoconnor/icommandlib).
 
 
 "long_string" is set to:
