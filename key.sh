@@ -6,6 +6,8 @@ hitchrun() {
     podman run --privileged -it --rm \
         -v $PROJECT_DIR:/src \
         -v hitchrunpy-hitch-container:/gen \
+        -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
+        -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
         --workdir /src \
         hitchrunpy-hitch \
         $1
