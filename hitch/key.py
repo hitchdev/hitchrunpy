@@ -1,4 +1,5 @@
 from pathquery import pathquery
+from commandlib import Command
 from hitchstory import StoryCollection
 from click import argument, group, pass_context
 import hitchpylibrarytoolkit
@@ -105,6 +106,7 @@ def deploy(version):
     """
     Deploy to pypi as specified version.
     """
+    Command("git", "config", "--global", "--add", "safe.directory", "/src").run()
     hitchpylibrarytoolkit.deploy(version)
 
 
