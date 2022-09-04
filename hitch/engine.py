@@ -158,8 +158,9 @@ class Engine(BaseEngine):
             else:
                 raise
 
-    def on_failure(self, error):
+    def on_failure(self, result):
         if os.getenv("CI") != "true":
+            print(result.stacktrace)
             import IPython ; IPython.embed()
 
     def pause(self, message="Pause"):

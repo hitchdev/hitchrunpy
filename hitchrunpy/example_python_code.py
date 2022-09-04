@@ -99,6 +99,7 @@ class ExamplePythonCode(object):
         self._environment_variables = {}
         self._modules = None
         self._in_directory = None
+        self._include_files = None
 
     def with_code(self, code):
         new_expyc = copy(self)
@@ -110,6 +111,11 @@ class ExamplePythonCode(object):
         new_expyc._in_directory = Path(directory).abspath()
         assert new_expyc._in_directory.exists(), "in_dir directory must exist"
         assert new_expyc._in_directory.isdir(), "in_dir directory must be directory"
+        return new_expyc
+
+    def include_files(self, *filepaths):
+        new_expyc = copy(self)
+        new_expyc._include_files = filepaths
         return new_expyc
 
     def with_env(self, **environment_vars):
@@ -167,6 +173,10 @@ class ExamplePythonCode(object):
             working_dir.rmtree()
         working_dir.mkdir()
 
+        if self._include_files is not None:
+            for filepath in self._include_files:
+                Path(filepath).copy(working_dir)
+
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
 
@@ -208,10 +218,14 @@ class ExamplePythonCode(object):
             working_dir.rmtree()
         working_dir.mkdir()
 
+        if self._include_files is not None:
+            for filepath in self._include_files:
+                import q
+                q(filepath)
+                Path(filepath).copy(working_dir)
+
         if self._modules is not None:
             for module_path in self._modules:
-                Path("/tmp/xxx").write_text(working_dir)
-                Path("/tmp/yyy").write_text(Path(module_path).basename())
                 Path(module_path).copy(working_dir / Path(module_path).basename())
 
         error_path = working_dir.joinpath("error.txt")
