@@ -5,6 +5,7 @@ from click import argument, group, pass_context
 import hitchpylibrarytoolkit
 from path import Path
 from engine import Engine
+import hitchpylibrarytoolkit
 
 
 class Directories:
