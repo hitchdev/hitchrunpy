@@ -14,5 +14,5 @@ Feed string variables to code:
             '     handle.write(some_string)'
         )).with_strings(some_string=some_string).run()
   - File in working dir contains:
-      filename: working/examplefile
+      filename: examplefile
       contents: â string of some kind

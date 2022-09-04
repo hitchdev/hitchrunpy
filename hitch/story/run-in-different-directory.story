@@ -13,7 +13,7 @@ Run in different directory:
         pyrunner.with_code((
             'with open("outputfile", "w") as handle:'
             '     handle.write("some kind of text")'
-        )).in_dir("differentdirectory/").run()
+        )).in_dir("../differentdirectory/").run()
   - File in dir contains:
       filename: differentdirectory/outputfile
       contents: some kind of text

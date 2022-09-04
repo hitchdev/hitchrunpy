@@ -57,8 +57,6 @@ Exceptions:
               \  [[ DIM ]][[ RED ]]None[[ RESET ALL ]]\n[[ RED ]]This should happen[[\
               \ RESET FORE ]]"
     Expect any kind of exception:
-      with:
-        working python version: 2.7.14
       steps:
       - Run:
           code: |

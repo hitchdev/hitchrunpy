@@ -50,5 +50,5 @@ Setup code:
         )).with_setup_code("exampletext = 'exampletext'")\
           .run()
   - File in working dir contains:
-      filename: working/examplefile
+      filename: examplefile
       contents: exampletext

@@ -8,5 +8,5 @@ Run code until completion:
             '     handle.write("exampletext")'
         )).run()
   - File in working dir contains:
-      filename: working/examplefile
+      filename: examplefile
       contents: exampletext

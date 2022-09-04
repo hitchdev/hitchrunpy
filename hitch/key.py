@@ -4,12 +4,30 @@ from hitchstory import BaseEngine, no_stacktrace_for, HitchStoryException
 from hitchrun import expected
 from strictyaml import Str, MapPattern, Map, Enum, Optional
 from pathquery import pathquery
-from hitchrun import DIR
+from click import argument, group, pass_context
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
 import hitchpylibrarytoolkit
 from templex import Templex
 import dirtemplate
 import colorama
+from path import Path
+
+class Directories:
+    gen = Path("/gen")
+    key = Path("/src/hitch/")
+    project = Path("/src/")
+    share = Path("/gen")
+
+
+DIR = Directories()
+
+
+@group(invoke_without_command=True)
+@pass_context
+def cli(ctx):
+    """Integration test command line interface."""
+    pass
+
 
 
 toolkit = hitchpylibrarytoolkit.ProjectToolkit(
@@ -58,9 +76,13 @@ class Engine(BaseEngine):
                 fullpath.dirname().makedirs()
             fullpath.write_text(content)
 
-        self.python = hitchpylibrarytoolkit.project_build(
-            "hitchrunpy", self.path, self.given["runner python version"]
-        ).bin.python
+        
+        self.pylibrary = hitchpylibrarytoolkit.PyLibraryBuild(
+            "hitchrunpy",
+            self.path,
+        ).with_python_version(self.given.get("python_version", "3.7.0"))
+        self.pylibrary.ensure_built()
+        self.python = self.pylibrary.bin.python
 
     def _story_friendly_output(self, content):
         return "\n".join(
@@ -81,8 +103,8 @@ class Engine(BaseEngine):
         return (
             self.given.get("setup", "")
             .replace("/path/to/working_dir", self.path.working_dir)
-            .replace("/path/to/share_dir/", self.path.share)
-            .replace("/path/to/build_dir/", self.path.state)
+            .replace("/path/to/share_dir", self.path.state)
+            .replace("/path/to/build_dir", self.path.state)
             .replace("{{ pyver }}", self.given["working python version"])
         )
 
@@ -108,27 +130,26 @@ class Engine(BaseEngine):
                 self.path.profile.joinpath("{0}.dat".format(self.story.slug))
             )
 
-        result = (
-            to_run.expect_exceptions().run() if raises is not None else to_run.run()
-        )
+        if raises is None:
+            result = to_run.run()
 
-        actual_output = self._story_friendly_output(result.output)
+            actual_output = self._story_friendly_output(result.output)
 
-        if will_output is not None:
-            try:
-                Templex(will_output).assert_match(actual_output)
-            except AssertionError:
-                if self.settings.get("rewrite"):
-                    self.current_step.update(**{"will output": actual_output})
-                else:
-                    raise
+            if will_output is not None:
+                try:
+                    Templex(will_output).assert_match(actual_output)
+                except AssertionError:
+                    if self.settings.get("rewrite"):
+                        self.current_step.update(**{"will output": actual_output})
+                    else:
+                        raise
 
-        if raises is not None:
+        else:
             exception_type = raises.get("type")
             message = raises.get("message")
 
             try:
-                result = self.example_py_code.expect_exceptions().run()
+                result = to_run.expect_exceptions().run()
                 result.exception_was_raised(exception_type)
                 exception_message = self._story_friendly_output(
                     result.exception.message
@@ -145,7 +166,7 @@ class Engine(BaseEngine):
     @no_stacktrace_for(AssertionError)
     def file_in_working_dir_contains(self, filename, contents):
         assert (
-            self.path.working_dir.joinpath(filename).bytes().decode("utf8") == contents
+            self.path.state.joinpath("..", "working", "working").joinpath(filename).bytes().decode("utf8") == contents
         )
 
     @no_stacktrace_for(AssertionError)
@@ -154,12 +175,13 @@ class Engine(BaseEngine):
 
     @no_stacktrace_for(AssertionError)
     def file_written_by_code_contains(self, filename, contents):
+        filepath = self.path.state / "working" / filename
         try:
-            Templex(contents).assert_match(self.path.state.joinpath(filename).text())
+            Templex(contents).assert_match(filepath.text())
         except AssertionError:
             if self.settings.get("rewrite"):
                 self.current_step.update(
-                    contents=self.path.state.joinpath(filename).text()
+                    contents=filepath.text()
                 )
             else:
                 raise
@@ -174,16 +196,18 @@ def _storybook(settings):
     return StoryCollection(pathquery(DIR.key).ext("story"), Engine(DIR, settings))
 
 
-@expected(HitchStoryException)
-def bdd(*words):
+@cli.command()
+@argument("words", nargs=-1)
+def bdd(words):
     """
     Run test with words.
     """
     _storybook({"rewrite": False}).shortcut(*words).play()
 
 
-@expected(HitchStoryException)
-def rbdd(*words):
+@cli.command()
+@argument("words", nargs=-1)
+def rbdd(words):
     """
     Run executable spec and rewrite if output has changed.
     """
@@ -192,7 +216,7 @@ def rbdd(*words):
     ).shortcut(*words).play()
 
 
-@expected(HitchStoryException)
+@cli.command()
 def regressfile(filename):
     """
     Run all stories in filename 'filename'.
@@ -202,16 +226,18 @@ def regressfile(filename):
     ).in_filename(filename).ordered_by_name().play().report()
 
 
+@cli.command()
 def regression():
     """
     Regression test - run all tests and linter.
     """
-    lint()
+    #toolkit.lint(exclude=["__init__.py"])
     StoryCollection(
         pathquery(DIR.key).ext("story"), Engine(DIR, {})
     ).ordered_by_name().play()
 
 
+@cli.command()
 def rewriteall():
     """
     Run regression tests with story rewriting on.
@@ -221,6 +247,7 @@ def rewriteall():
     ).ordered_by_name().play().report()
 
 
+@cli.command()
 def reformat():
     """
     Reformat using black and then relint.
@@ -228,6 +255,7 @@ def reformat():
     toolkit.reformat()
 
 
+@cli.command()
 def lint():
     """
     Lint project code and hitch code.
@@ -235,6 +263,7 @@ def lint():
     toolkit.lint(exclude=["__init__.py"])
 
 
+@cli.command()
 def deploy(version):
     """
     Deploy to pypi as specified version.
@@ -242,7 +271,7 @@ def deploy(version):
     hitchpylibrarytoolkit.deploy(version)
 
 
-@expected(dirtemplate.exceptions.DirTemplateException)
+@cli.command()
 def docgen():
     """
     Build documentation.
@@ -250,9 +279,13 @@ def docgen():
     toolkit.docgen(Engine(DIR, {}))
 
 
-@expected(dirtemplate.exceptions.DirTemplateException)
+@cli.command()
 def readmegen():
     """
     Build documentation.
     """
     toolkit.readmegen(Engine(DIR, {}))
+
+
+if __name__ == "__main__":
+    cli()

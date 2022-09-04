@@ -14,5 +14,5 @@ Run with environment variables:
             '     handle.write(os.environ["MYVAR"])\n'
         )).run()
   - File in working dir contains:
-      filename: working/examplefile
+      filename: examplefile
       contents: myenvironmentvar

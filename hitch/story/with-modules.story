@@ -18,7 +18,7 @@ Use modules:
         pyrunner.with_code((
             "from write_to_file import write_text\n"
             "write_text()"
-        )).with_modules("write_to_file.py").run()
+        )).with_modules(f"{BUILD_DIR}/state/write_to_file.py").run()
   - File in working dir contains:
-      filename: working/examplefile
+      filename: examplefile
       contents: â string of some kind

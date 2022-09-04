@@ -8,14 +8,17 @@ hitchrunpy:
       import hitchbuildpy
       import hitchbuild
 
-      virtualenv = hitchbuildpy.VirtualenvBuild(
-          name="py{{ pyver }}",
-          base_python=hitchbuildpy.PyenvBuild("{{ pyver }}").with_build_path(
-              '/path/to/share_dir/'
-          ),
-      ).with_build_path("/path/to/build_dir/")
+      BUILD_DIR = "/path/to/build_dir/.."
 
-      virtualenv.ensure_built()
+      virtualenv = hitchbuildpy.VirtualenvBuild(
+          "/path/to/build_dir/../py{{ pyver }}",
+          base_python=hitchbuildpy.PyenvBuild(
+              '/path/to/share_dir/../pyenv{{ pyver }}',
+              "{{ pyver }}",
+          ),
+      )
+
+      virtualenv.verify()
 
       pyrunner = ExamplePythonCode(
           virtualenv.bin.python,

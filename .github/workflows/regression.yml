@@ -1,0 +1,26 @@
+name: Regression
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+jobs:
+  regression:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+
+      - name: ensure qemu installed so arm containers work
+        run: |
+          sudo apt-get update
+          sudo apt-get install qemu-system-arm qemu-efi qemu-user-static -y
+
+      - name: build
+        run: ./key.sh make
+
+      - name: regression
+        run: ./key.sh regression

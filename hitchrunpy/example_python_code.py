@@ -210,7 +210,9 @@ class ExamplePythonCode(object):
 
         if self._modules is not None:
             for module_path in self._modules:
-                Path(module_path).copy(working_dir / module_path)
+                Path("/tmp/xxx").write_text(working_dir)
+                Path("/tmp/yyy").write_text(Path(module_path).basename())
+                Path(module_path).copy(working_dir / Path(module_path).basename())
 
         error_path = working_dir.joinpath("error.txt")
         example_python_code = working_dir.joinpath("examplepythoncode.py")
