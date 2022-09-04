@@ -109,7 +109,7 @@ def deploy(version):
     Deploy to pypi as specified version.
     """
     Command("git", "config", "--global", "--add", "safe.directory", "/src").run()
-    hitchpylibrarytoolkit.deploy(version)
+    toolkit.deploy(version)
 
 
 @cli.command()
