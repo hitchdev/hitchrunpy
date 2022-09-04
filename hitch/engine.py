@@ -6,6 +6,7 @@ from hitchrunpy import ExamplePythonCode, HitchRunPyException
 import hitchpylibrarytoolkit
 from templex import Templex
 import colorama
+import os
 
 
 class Engine(BaseEngine):
@@ -32,7 +33,7 @@ class Engine(BaseEngine):
     def set_up(self):
         """Set up your applications and the test environment."""
         self.path.state = self.path.gen / "state"
-        self.path.working_dir = self.path.gen / "working"
+        self.path.working_dir = self.path.gen / "state" / "working"
 
         if self.path.state.exists():
             self.path.state.rmtree(ignore_errors=True)
@@ -60,7 +61,7 @@ class Engine(BaseEngine):
         return "\n".join(
             [
                 line.rstrip()
-                for line in content.replace(self.path.gen / "working", "/path/to/code")
+                for line in content.replace(self.path.gen / "state" / "working", "/path/to")
                 .replace(self.path.share, "/path/to/share")
                 .replace(colorama.Fore.RED, "[[ RED ]]")
                 .replace(colorama.Style.BRIGHT, "[[ BRIGHT ]]")
@@ -75,7 +76,6 @@ class Engine(BaseEngine):
         return (
             self.given.get("setup", "")
             .replace("/path/to/working_dir", self.path.working_dir)
-            .replace("/path/to/share_dir", self.path.state)
             .replace("/path/to/build_dir", self.path.state)
             .replace("{{ pyver }}", self.given["working python version"])
         )
@@ -138,7 +138,7 @@ class Engine(BaseEngine):
     @no_stacktrace_for(AssertionError)
     def file_in_working_dir_contains(self, filename, contents):
         assert (
-            self.path.state.joinpath("..", "working", "working").joinpath(filename).bytes().decode("utf8") == contents
+            self.path.state.joinpath("working", "working").joinpath(filename).bytes().decode("utf8") == contents
         )
 
     @no_stacktrace_for(AssertionError)
@@ -157,6 +157,10 @@ class Engine(BaseEngine):
                 )
             else:
                 raise
+
+    def on_failure(self, error):
+        if os.getenv("CI") != "true":
+            import IPython ; IPython.embed()
 
     def pause(self, message="Pause"):
         import IPython
