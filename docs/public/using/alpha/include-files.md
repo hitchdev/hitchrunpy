@@ -1,24 +1,15 @@
 
 ---
-title: CProfile
+title: Include files
 ---
 
 
 
-Code snippets run by hitchrunpy can be
-profiled with cprofile.
+This example shows how to include files which can be
+used as e.g. modules to import or text files to read accessible
+in the working directory.
 
 
-"long_string" is set to:
-
-```
-def do_calculation(number):
-    x = i^i
-
-for i in range(0, 5000 * 1000):
-    do_calculation(i)
-
-```
 
 
 
@@ -53,16 +44,26 @@ pyrunner = ExamplePythonCode(
 
 
 ```python
-pyrunner.with_cprofile("profiledata.dat").with_code(long_string).run()
+CODE = """
+from write_file import write_to_file
 
-import pstats
+write_to_file()
+"""
 
-data = pstats.Stats("profiledata.dat").sort_stats('cumulative')
-data.calc_callees()
+pyrunner.with_code(CODE).include_files("../differentdirectory/write_file.py").run()
 
 ```
 
 
+
+
+
+
+Then the file "examplefile" in the working dir will contain:
+
+```
+â string of some kind
+```
 
 
 
@@ -74,6 +75,6 @@ data.calc_callees()
 !!! note "Executable specification"
 
     Documentation automatically generated from 
-    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/cprofile.story">cprofile.story</a>
+    <a href="https://github.com/hitchdev/hitchrunpy/blob/master/hitch/story/include-files.story">include-files.story</a>
     storytests.
 

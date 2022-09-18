@@ -21,7 +21,10 @@ jobs:
           sudo apt-get install qemu-system-arm qemu-efi qemu-user-static -y
 
       - name: build
-        run: ./key.sh make
+        run: |
+          touch ~/.ssh/id_rsa
+          touch ~/.ssh/id_rsa.pub
+          ./key.sh make
 
       - name: regression
         run: ./key.sh regression

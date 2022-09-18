@@ -48,6 +48,7 @@ $ pip install hitchstory
 - [CProfile](using/alpha/cprofile)
 - [Run with environment variables](using/alpha/environment-vars)
 - [Exceptions](using/alpha/exceptions)
+- [Include files](using/alpha/include-files)
 - [Interact with running code](using/alpha/interact-with-running-code)
 - [Setup code](using/alpha/setup-code)
 - [Error occurred](using/alpha/syntax-errors)

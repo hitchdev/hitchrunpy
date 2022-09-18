@@ -1,5 +1,7 @@
 {% if readme -%}
 # HitchRunPy
+
+[![Main branch status](https://github.com/hitchdev/hitchrunpy/actions/workflows/regression.yml/badge.svg)](https://github.com/hitchdev/hitchrunpy/actions/workflows/regression.yml)
 {%- else -%}
 ---
 title: HitchRunPy

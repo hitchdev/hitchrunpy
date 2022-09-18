@@ -20,14 +20,17 @@ from ensure import Ensure
 import hitchbuildpy
 import hitchbuild
 
-virtualenv = hitchbuildpy.VirtualenvBuild(
-    name="py3.7",
-    base_python=hitchbuildpy.PyenvBuild("3.7").with_build_path(
-        '/path/to/share_dir/'
-    ),
-).with_build_path("/path/to/build_dir/")
+BUILD_DIR = "/path/to/build_dir/.."
 
-virtualenv.ensure_built()
+virtualenv = hitchbuildpy.VirtualenvBuild(
+    "/path/to/build_dir/../py3.7",
+    base_python=hitchbuildpy.PyenvBuild(
+        '/path/to/share_dir/../pyenv3.7',
+        "3.7",
+    ),
+)
+
+virtualenv.verify()
 
 pyrunner = ExamplePythonCode(
     virtualenv.bin.python,
@@ -91,7 +94,7 @@ hitchrunpy.exceptions.ExpectedExceptionWasDifferent:
 Expected exception '__main__.CustomException', instead '__main__.AnotherCustomException' was raised:
 
 [0]: function '[[ BRIGHT ]]<module>[[ RESET ALL ]]'
-  /path/to/code/working/examplepythoncode.py
+  /path/to/working/examplepythoncode.py
 
 
         67 :
@@ -102,7 +105,7 @@ Expected exception '__main__.CustomException', instead '__main__.AnotherCustomEx
 
 
 [1]: function '[[ BRIGHT ]]run_example_code[[ RESET ALL ]]'
-  /path/to/code/working/examplepythoncode.py
+  /path/to/working/examplepythoncode.py
 
 
         63 :
@@ -113,7 +116,7 @@ Expected exception '__main__.CustomException', instead '__main__.AnotherCustomEx
 
 
 [2]: function '[[ BRIGHT ]]runcode[[ RESET ALL ]]'
-  /path/to/code/working/examplepythoncode.py
+  /path/to/working/examplepythoncode.py
 
 
         58 :                             pass

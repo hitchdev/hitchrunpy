@@ -3,6 +3,9 @@
 
 ### Latest
 
+* BUGFIX : Remove errant debugging statement
+* FEATURE : .include_files()
+* BUGFIX : Fix hitchrunpy.
 * FEATURE : Run python code in different directory to the working directory.
 
 

@@ -18,14 +18,17 @@ from ensure import Ensure
 import hitchbuildpy
 import hitchbuild
 
-virtualenv = hitchbuildpy.VirtualenvBuild(
-    name="py3.7",
-    base_python=hitchbuildpy.PyenvBuild("3.7").with_build_path(
-        '/path/to/share_dir/'
-    ),
-).with_build_path("/path/to/build_dir/")
+BUILD_DIR = "/path/to/build_dir/.."
 
-virtualenv.ensure_built()
+virtualenv = hitchbuildpy.VirtualenvBuild(
+    "/path/to/build_dir/../py3.7",
+    base_python=hitchbuildpy.PyenvBuild(
+        '/path/to/share_dir/../pyenv3.7',
+        "3.7",
+    ),
+)
+
+virtualenv.verify()
 
 pyrunner = ExamplePythonCode(
     virtualenv.bin.python,
@@ -45,7 +48,7 @@ some_string = u"â string of some kind"
 pyrunner.with_code((
     "from write_to_file import write_text\n"
     "write_text()"
-)).with_modules("write_to_file.py").run()
+)).with_modules(f"{BUILD_DIR}/state/write_to_file.py").run()
 
 ```
 
@@ -54,7 +57,7 @@ pyrunner.with_code((
 
 
 
-Then the file "working/examplefile" in the working dir will contain:
+Then the file "examplefile" in the working dir will contain:
 
 ```
 â string of some kind

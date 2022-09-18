@@ -1,5 +1,7 @@
 # HitchRunPy
 
+[![Main branch status](https://github.com/hitchdev/hitchrunpy/actions/workflows/regression.yml/badge.svg)](https://github.com/hitchdev/hitchrunpy/actions/workflows/regression.yml)
+
 HitchRunPy is a tool to run, test and profile snippets of python code.
 
 HitchRunPy was developed to run executable specifications
@@ -30,24 +32,21 @@ ExamplePythonCode(
 
 ## Install
 
-Hitchstory is designed to be used mainly with hitchkey and hitchstory. [ TODO set up ]
-
-However, hitchrunpy can also be installed directly from pypi using pip.
-
 ```sh
 $ pip install hitchstory
 ```
 
 ## Using HitchRunPy
 
-- [Run with environment variables](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Timeout](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Error occurred](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Setup code](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [CProfile](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Exceptions](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Interact with running code](https://hitchdev.com/hitchrunpy/using/alpha/)
-- [Use modules](https://hitchdev.com/hitchrunpy/using/alpha/)
+- [CProfile](https://hitchdev.com/hitchrunpy/using/alpha/cprofile)
+- [Run with environment variables](https://hitchdev.com/hitchrunpy/using/alpha/environment-vars)
+- [Exceptions](https://hitchdev.com/hitchrunpy/using/alpha/exceptions)
+- [Include files](https://hitchdev.com/hitchrunpy/using/alpha/include-files)
+- [Interact with running code](https://hitchdev.com/hitchrunpy/using/alpha/interact-with-running-code)
+- [Setup code](https://hitchdev.com/hitchrunpy/using/alpha/setup-code)
+- [Error occurred](https://hitchdev.com/hitchrunpy/using/alpha/syntax-errors)
+- [Timeout](https://hitchdev.com/hitchrunpy/using/alpha/timeout)
+- [Use modules](https://hitchdev.com/hitchrunpy/using/alpha/variables)
 
 
 

@@ -42,14 +42,17 @@ from ensure import Ensure
 import hitchbuildpy
 import hitchbuild
 
-virtualenv = hitchbuildpy.VirtualenvBuild(
-    name="py3.7",
-    base_python=hitchbuildpy.PyenvBuild("3.7").with_build_path(
-        '/path/to/share_dir/'
-    ),
-).with_build_path("/path/to/build_dir/")
+BUILD_DIR = "/path/to/build_dir/.."
 
-virtualenv.ensure_built()
+virtualenv = hitchbuildpy.VirtualenvBuild(
+    "/path/to/build_dir/../py3.7",
+    base_python=hitchbuildpy.PyenvBuild(
+        '/path/to/share_dir/../pyenv3.7',
+        "3.7",
+    ),
+)
+
+virtualenv.verify()
 
 pyrunner = ExamplePythonCode(
     virtualenv.bin.python,
