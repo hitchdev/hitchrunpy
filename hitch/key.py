@@ -83,6 +83,7 @@ def validate():
     toolkit.validate_readmegen(Engine(DIR, {}))
     toolkit.validate_docgen(Engine(DIR, {}))
 
+
 @cli.command()
 def rewriteall():
     """
