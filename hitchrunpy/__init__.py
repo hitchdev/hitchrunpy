@@ -8,4 +8,4 @@ from hitchrunpy.exceptions import OutputAppearsDifferent
 from hitchrunpy.exceptions import ErrorRunningCode
 
 
-__version__ = "DEVELOPMENT_VERSION"
+__version__ = "0.11.2"

@@ -1,5 +1,5 @@
 from pathquery import pathquery
-from commandlib import python
+from commandlib import python, Command
 from hitchstory import StoryCollection
 from click import argument, group, pass_context
 import hitchpylibrarytoolkit
@@ -114,13 +114,16 @@ def deploy():
     """
     Deploy to pypi as specified version.
     """
+    git = Command("git")
+    git("clone", "git@github.com:hitchdev/hitchrunpy.git").in_dir(DIR.gen).run()
+    project = DIR.gen / "hitchrunpy"
     version = DIR.project.joinpath("VERSION").text().rstrip()
     initpy = DIR.project.joinpath("hitchrunpy", "__init__.py")
     original_initpy_contents = initpy.bytes().decode("utf8")
     initpy.write_text(
         original_initpy_contents.replace("DEVELOPMENT_VERSION", version)
     )
-    python("setup.py", "sdist").in_dir(DIR.project).run()
+    python("setup.py", "sdist").in_dir(project).run()
     initpy.write_text(original_initpy_contents)
 
     # Upload to pypi
@@ -129,7 +132,7 @@ def deploy():
         "twine",
         "upload",
         "dist/{0}-{1}.tar.gz".format("hitchrunpy", version),
-    ).in_dir(DIR.project).run()
+    ).in_dir(project).run()
 
 
 @cli.command()
