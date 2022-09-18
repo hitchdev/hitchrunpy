@@ -38,6 +38,7 @@ case "$1" in
         echo "Hit enter to push..."
         read
         git push --follow-tags
+        ;;
     "bash")
         hitchrun "bash"
         ;;
