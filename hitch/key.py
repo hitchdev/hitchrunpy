@@ -74,6 +74,15 @@ def regression():
         pathquery(DIR.key).ext("story"), Engine(DIR, {})
     ).ordered_by_name().play()
 
+
+@cli.command()
+def validate():
+    """
+    Validate docs.
+    """
+    toolkit.validate_readmegen(Engine(DIR, {}))
+    toolkit.validate_docgen(Engine(DIR, {}))
+
 @cli.command()
 def rewriteall():
     """

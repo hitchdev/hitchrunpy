@@ -6,6 +6,11 @@
 
 No relevant code changes.
 
+### 0.11.2
+
+
+No relevant code changes.
+
 ### 0.11.1
 
 * BUGFIX : Remove errant debugging statement
