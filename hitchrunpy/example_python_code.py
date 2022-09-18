@@ -220,8 +220,6 @@ class ExamplePythonCode(object):
 
         if self._include_files is not None:
             for filepath in self._include_files:
-                import q
-                q(filepath)
                 Path(filepath).copy(working_dir)
 
         if self._modules is not None:
