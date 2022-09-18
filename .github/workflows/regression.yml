@@ -22,6 +22,7 @@ jobs:
 
       - name: build
         run: |
+          mkdir -p ~/.ssh/
           touch ~/.ssh/id_rsa
           touch ~/.ssh/id_rsa.pub
           ./key.sh make
