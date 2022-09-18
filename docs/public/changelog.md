@@ -3,6 +3,11 @@
 
 ### Latest
 
+
+No relevant code changes.
+
+### 0.11.1
+
 * BUGFIX : Remove errant debugging statement
 * FEATURE : .include_files()
 * BUGFIX : Fix hitchrunpy.

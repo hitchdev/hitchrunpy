@@ -1,5 +1,5 @@
 from pathquery import pathquery
-from commandlib import Command
+from commandlib import python
 from hitchstory import StoryCollection
 from click import argument, group, pass_context
 import hitchpylibrarytoolkit
@@ -70,12 +70,9 @@ def regression():
     Regression test - run all tests and linter.
     """
     toolkit.lint(exclude=["__init__.py"])
-    toolkit.validate_readmegen(Engine(DIR, {}))
-    toolkit.validate_docgen(Engine(DIR, {}))
     StoryCollection(
         pathquery(DIR.key).ext("story"), Engine(DIR, {})
     ).ordered_by_name().play()
-
 
 @cli.command()
 def rewriteall():
@@ -105,10 +102,11 @@ def lint():
 
 @cli.command()
 @argument("version")
-def deploy(version):
+def deploy():
     """
     Deploy to pypi as specified version.
     """
+    version = DIR.project.joinpath("VERSION").text().rstrip()
     initpy = DIR.project.joinpath("hitchrunpy", "__init__.py")
     original_initpy_contents = initpy.bytes().decode("utf8")
     initpy.write_text(

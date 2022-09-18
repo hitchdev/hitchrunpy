@@ -33,6 +33,8 @@ case "$1" in
         CURRENT_VERSION=`cat VERSION`
         echo $2 > VERSION
         git add .
+        hitchrun "/venv/bin/python hitch/key.py readmegen"
+        hitchrun "/venv/bin/python hitch/key.py docgen"
         git commit -m "RELEASE: Version $CURRENT_VERSION -> $2"
         git tag -a $2 -m "Version $1"
         echo "Hit enter to push..."
