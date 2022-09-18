@@ -70,6 +70,8 @@ def regression():
     Regression test - run all tests and linter.
     """
     toolkit.lint(exclude=["__init__.py"])
+    toolkit.validate_readmegen(Engine(DIR, {}))
+    toolkit.validate_docgen(Engine(DIR, {}))
     StoryCollection(
         pathquery(DIR.key).ext("story"), Engine(DIR, {})
     ).ordered_by_name().play()
@@ -107,8 +109,21 @@ def deploy(version):
     """
     Deploy to pypi as specified version.
     """
-    Command("git", "config", "--global", "--add", "safe.directory", "/src").run()
-    toolkit.deploy(version)
+    initpy = DIR.project.joinpath("hitchrunpy", "__init__.py")
+    original_initpy_contents = initpy.bytes().decode("utf8")
+    initpy.write_text(
+        original_initpy_contents.replace("DEVELOPMENT_VERSION", version)
+    )
+    python("setup.py", "sdist").in_dir(DIR.project).run()
+    initpy.write_text(original_initpy_contents)
+
+    # Upload to pypi
+    python(
+        "-m",
+        "twine",
+        "upload",
+        "dist/{0}-{1}.tar.gz".format("hitchrunpy", version),
+    ).in_dir(DIR.project).run()
 
 
 @cli.command()

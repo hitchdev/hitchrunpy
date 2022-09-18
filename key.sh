@@ -29,6 +29,15 @@ case "$1" in
         fi
         podman build -f hitch/Dockerfile-hitch -t hitchrunpy-hitch $PROJECT_DIR
         ;;
+    "bump")
+        CURRENT_VERSION=`cat VERSION`
+        echo $2 > VERSION
+        git add .
+        git commit -m "RELEASE: Version $CURRENT_VERSION -> $2"
+        git tag -a $2 -m "Version $1"
+        echo "Hit enter to push..."
+        read
+        git push --follow-tags
     "bash")
         hitchrun "bash"
         ;;
