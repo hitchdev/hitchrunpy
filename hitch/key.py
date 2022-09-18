@@ -110,7 +110,6 @@ def lint():
 
 
 @cli.command()
-@argument("version")
 def deploy():
     """
     Deploy to pypi as specified version.
