@@ -1,20 +1,16 @@
-from pathquery import pathquery
-from commandlib import python, Command
 from hitchstory import StoryCollection
+from pathquery import pathquery
 from click import argument, group, pass_context
 import hitchpylibrarytoolkit
-from path import Path
 from engine import Engine
 
 
-class Directories:
-    gen = Path("/gen")
-    key = Path("/src/hitch/")
-    project = Path("/src/")
-    share = Path("/gen")
-
-
-DIR = Directories()
+toolkit = hitchpylibrarytoolkit.ProjectToolkitV2(
+    "HitchRunPy",
+    "hitchrunpy",
+    "hitchdev/hitchrunpy",
+    image="",
+)
 
 
 @group(invoke_without_command=True)
@@ -24,74 +20,72 @@ def cli(ctx):
     pass
 
 
-toolkit = hitchpylibrarytoolkit.ProjectToolkit(
-    "hitchrunpy",
-    DIR,
-)
+DIR = toolkit.DIR
 
 
-def _storybook(settings):
-    return StoryCollection(pathquery(DIR.key).ext("story"), Engine(DIR, settings))
+def _storybook(**settings):
+    return StoryCollection(pathquery(DIR.key).ext("story"), Engine(DIR, **settings))
 
 
-@cli.command()
-@argument("words", nargs=-1)
-def bdd(words):
-    """
-    Run test with words.
-    """
-    _storybook({"rewrite": False}).shortcut(*words).play()
+def _current_version():
+    return DIR.project.joinpath("VERSION").text().rstrip()
+
+
+def _devenv():
+    return toolkit.devenv()
 
 
 @cli.command()
-@argument("words", nargs=-1)
-def rbdd(words):
+@argument("keywords", nargs=-1)
+def rbdd(keywords):
     """
-    Run executable spec and rewrite if output has changed.
+    Run story with name containing keywords and rewrite.
     """
-    StoryCollection(
-        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
-    ).shortcut(*words).play()
+    _storybook(python_path=_devenv().python_path, rewrite=True).shortcut(
+        *keywords
+    ).play()
 
 
 @cli.command()
+@argument("keywords", nargs=-1)
+def bdd(keywords):
+    """
+    Run story with name containing keywords.
+    """
+    _storybook(python_path=_devenv().python_path).shortcut(*keywords).play()
+
+
+@cli.command()
+@argument("filename")
 def regressfile(filename):
     """
     Run all stories in filename 'filename'.
     """
     StoryCollection(
-        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
-    ).in_filename(filename).ordered_by_name().play().report()
-
-
-@cli.command()
-def regression():
-    """
-    Regression test - run all tests and linter.
-    """
-    toolkit.lint(exclude=["__init__.py"])
-    StoryCollection(
-        pathquery(DIR.key).ext("story"), Engine(DIR, {})
-    ).ordered_by_name().play()
-
-
-@cli.command()
-def validate():
-    """
-    Validate docs.
-    """
-    toolkit.validate_readmegen(Engine(DIR, {}))
-    toolkit.validate_docgen(Engine(DIR, {}))
+        pathquery(DIR.key).ext("story"), Engine(DIR, python_path=_devenv().python_path)
+    ).in_filename(filename).ordered_by_name().play()
 
 
 @cli.command()
 def rewriteall():
     """
-    Run regression tests with story rewriting on.
+    Run all stories in rewrite mode.
     """
     StoryCollection(
-        pathquery(DIR.key).ext("story"), Engine(DIR, {"rewrite": True})
-    ).ordered_by_name().play().report()
+        pathquery(DIR.key).ext("story"),
+        Engine(DIR, python_path=_devenv().python_path, rewrite=True),
+    ).only_uninherited().ordered_by_name().play()
+
+
+@cli.command()
+def regression():
+    """
+    Continuos integration - lint and run all stories.
+    """
+    # toolkit.lint(exclude=["__init__.py"])
+    StoryCollection(
+        pathquery(DIR.key).ext("story"), Engine(DIR, python_path=_devenv().python_path)
+    ).only_uninherited().ordered_by_name().play()
 
 
 @cli.command()
@@ -111,45 +105,78 @@ def lint():
 
 
 @cli.command()
-def deploy():
+@argument("test", required=False)
+def deploy(test="test"):
     """
     Deploy to pypi as specified version.
     """
-    git = Command("git")
-    git("clone", "git@github.com:hitchdev/hitchrunpy.git").in_dir(DIR.gen).run()
-    project = DIR.gen / "hitchrunpy"
-    version = DIR.project.joinpath("VERSION").text().rstrip()
-    initpy = DIR.project.joinpath("hitchrunpy", "__init__.py")
-    original_initpy_contents = initpy.bytes().decode("utf8")
-    initpy.write_text(
-        original_initpy_contents.replace("DEVELOPMENT_VERSION", version)
+    testpypi = not (test == "live")
+    toolkit.deploy(testpypi=testpypi)
+
+
+@cli.command()
+def draftdocs():
+    """
+    Build documentation.
+    """
+    toolkit.draft_docs(storybook=_storybook(python_path=_devenv().python_path))
+
+
+@cli.command()
+def publishdocs():
+    """Publish pushed docs."""
+    toolkit.publish(storybook=_storybook(python_path=_devenv().python_path))
+
+
+@cli.command()
+def build():
+    _devenv()
+
+
+@cli.command()
+def cleandevenv():
+    DIR.gen.joinpath("pyenv", "versions", "devvenv").remove()
+
+
+@cli.command()
+@argument("strategy_name", nargs=1)
+def envirotest(strategy_name):
+    """Run tests on package / python version combinations."""
+    import envirotest
+    import pyenv
+
+    test_package = pyenv.PythonRequirements(
+        [
+            "prettystack=={}".format(_current_version()),
+        ],
+        test_repo=True,
     )
-    python("setup.py", "sdist").in_dir(project).run()
-    initpy.write_text(original_initpy_contents)
 
-    # Upload to pypi
-    python(
-        "-m",
-        "twine",
-        "upload",
-        "dist/{0}-{1}.tar.gz".format("hitchrunpy", version),
-    ).in_dir(project).run()
+    test_package = pyenv.PythonProjectDirectory(DIR.project)
 
+    prerequisites = [
+        pyenv.PythonVersionDependentRequirement(
+            package="markupsafe",
+            lower_version="2.0.0",
+            python_version_threshold="3.9",
+            higher_version="2.1.2",
+        ),
+        pyenv.PythonRequirements(
+            [
+                "ensure",
+            ]
+        ),
+    ]
 
-@cli.command()
-def docgen():
-    """
-    Build documentation.
-    """
-    toolkit.docgen(Engine(DIR, {}))
-
-
-@cli.command()
-def readmegen():
-    """
-    Build documentation.
-    """
-    toolkit.readmegen(Engine(DIR, {}))
+    envirotest.run_test(
+        pyenv.Pyenv(DIR.gen / "pyenv"),
+        DIR.project.joinpath("pyproject.toml").text(),
+        test_package,
+        prerequisites,
+        strategy_name,
+        _storybook,
+        lambda python_path: False,
+    )
 
 
 if __name__ == "__main__":

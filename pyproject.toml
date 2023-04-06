@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["hitchrunpy"]
+
+[project]
+name = "hitchrunpy"
+authors = [
+    {name = "Colm O'Connor", email = "colm.oconnor.github@gmail.com"},
+]
+description = "Run and interact with snippets of python code."
+license = {text = "MIT"}
+requires-python = ">=3.7.0"
+keywords = ["test", "python"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Libraries",
+    "Natural Language :: English",
+]
+dependencies = [
+    "jinja2>=2.10",
+    "prettystack>=0.2.7",
+    "path.py>=9.0",
+    "icommandlib>=0.6.0"
+]
+dynamic = ["version", "readme"]
+
+[project.urls]
+homepage = "https://hitchdev.com/hitchrunpy"
+documentation = "https://hitchdev.com/hitchrunpy/using"
+repository = "https://github.com/hitchdev/hitchrunpy"
+changelog = "https://hitchdev.com/hitchrunpy/changelog"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md",], content-type = "text/markdown"}
+version = {file = "VERSION"}

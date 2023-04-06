@@ -254,10 +254,9 @@ class ExamplePythonCode(object):
             icommand = icommand.with_timeout(self._timeout)
 
         try:
-            finished_process = icommand.run().wait_for_successful_exit(
-                timeout=self._timeout
-            )
-            command_output = finished_process.screenshot.strip()
+            process = icommand.run()
+            process.wait_for_successful_exit(timeout=self._timeout)
+            command_output = process.screenshot().strip()
         except IProcessTimeout as timeout_error:
             raise exceptions.PythonTimeout(str(timeout_error))
         except ICommandError as command_error:

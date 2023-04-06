@@ -12,7 +12,7 @@ Error occurred:
 
             File "/path/to/working/examplepythoncode.py", line 56
               x =
-                ^
+                 ^
           SyntaxError: invalid syntax
 Unexpected exception:
   based on: hitchrunpy

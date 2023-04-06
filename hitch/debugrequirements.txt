@@ -5,5 +5,5 @@ pudb
 psutil
 sure
 commandlib
-hitchbuildpy
+hitchbuild
 ensure

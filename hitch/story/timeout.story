@@ -14,4 +14,7 @@ Timeout:
       code: pyrunner.with_code(long_string).with_timeout(1.0).run()
       raises:
         type: hitchrunpy.exceptions.PythonTimeout
-        message: Timed out waiting for exit.
+        message: |+
+          Timed out after 1.0 seconds:
+
+...

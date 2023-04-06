@@ -3,6 +3,7 @@ from hitchstory import InfoDefinition, InfoProperty
 from hitchstory import BaseEngine, no_stacktrace_for, HitchStoryException
 from strictyaml import Str, MapPattern, Map, Enum, Optional
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
+from commandlib import Command
 import hitchpylibrarytoolkit
 from templex import Templex
 import colorama
@@ -14,8 +15,6 @@ class Engine(BaseEngine):
 
     given_definition = GivenDefinition(
         long_string=GivenProperty(Str()),
-        runner_python_version=GivenProperty(Str()),
-        working_python_version=GivenProperty(Str()),
         setup=GivenProperty(Str()),
         code=GivenProperty(Str()),
         files=GivenProperty(MapPattern(Str(), Str())),
@@ -26,9 +25,11 @@ class Engine(BaseEngine):
         docs=InfoProperty(schema=Str()),
     )
 
-    def __init__(self, paths, settings):
+    def __init__(self, paths, rewrite=False, python_path=None):
         self.path = paths
-        self.settings = settings
+        self._rewrite = rewrite
+        self._python_path = python_path
+        self._cprofile = False
 
     def set_up(self):
         """Set up your applications and the test environment."""
@@ -49,13 +50,7 @@ class Engine(BaseEngine):
                 fullpath.dirname().makedirs()
             fullpath.write_text(content)
 
-        
-        self.pylibrary = hitchpylibrarytoolkit.PyLibraryBuild(
-            "hitchrunpy",
-            self.path,
-        ).with_python_version(self.given.get("python_version", "3.7.0"))
-        self.pylibrary.ensure_built()
-        self.python = self.pylibrary.bin.python
+        self.python = Command(self._python_path)
 
     def _story_friendly_output(self, content):
         return "\n".join(
@@ -77,7 +72,7 @@ class Engine(BaseEngine):
             self.given.get("setup", "")
             .replace("/path/to/working_dir", self.path.working_dir)
             .replace("/path/to/build_dir", self.path.state)
-            .replace("{{ pyver }}", self.given["working python version"])
+            .replace("{{ pyver }}", "3.11.2")
         )
 
     @no_stacktrace_for(AssertionError)
@@ -97,7 +92,7 @@ class Engine(BaseEngine):
         )
         to_run = self.example_py_code.with_code(code)
 
-        if self.settings.get("cprofile"):
+        if self._cprofile:
             to_run = to_run.with_cprofile(
                 self.path.profile.joinpath("{0}.dat".format(self.story.slug))
             )
@@ -111,7 +106,7 @@ class Engine(BaseEngine):
                 try:
                     Templex(will_output).assert_match(actual_output)
                 except AssertionError:
-                    if self.settings.get("rewrite"):
+                    if self._rewrite:
                         self.current_step.update(**{"will output": actual_output})
                     else:
                         raise
@@ -128,7 +123,7 @@ class Engine(BaseEngine):
                 )
                 Templex(exception_message).assert_match(message)
             except AssertionError:
-                if self.settings.get("rewrite"):
+                if self._rewrite:
                     new_raises = raises.copy()
                     new_raises["message"] = exception_message
                     self.current_step.update(raises=new_raises)
@@ -151,7 +146,7 @@ class Engine(BaseEngine):
         try:
             Templex(contents).assert_match(filepath.text())
         except AssertionError:
-            if self.settings.get("rewrite"):
+            if self._rewrite:
                 self.current_step.update(
                     contents=filepath.text()
                 )
@@ -161,7 +156,6 @@ class Engine(BaseEngine):
     def on_failure(self, result):
         if os.getenv("CI") != "true":
             print(result.stacktrace)
-            import IPython ; IPython.embed()
 
     def pause(self, message="Pause"):
         import IPython
