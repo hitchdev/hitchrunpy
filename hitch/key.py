@@ -113,6 +113,13 @@ def deploy(test="test"):
     testpypi = not (test == "live")
     toolkit.deploy(testpypi=testpypi)
 
+@cli.command()
+def packagetest():
+    """
+    Test packaging.
+    """
+    toolkit.package_test()
+
 
 @cli.command()
 def draftdocs():

@@ -2,8 +2,12 @@ build/
 dist/
 .cache
 hitchrunpy.egg-info/
+state/
 __pycache__
 *.pyc
 *.kate-swp
-hitch/gen
+hitch/devenv.yml
 temp/
+.vscode/
+hitch/devenv.yml
+hitchpylibrarytoolkit
